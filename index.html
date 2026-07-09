@@ -65,7 +65,6 @@
     transition:height .3s cubic-bezier(.22,1,.36,1), transform .4s cubic-bezier(.22,1,.36,1);
   }
   header.scrolled .brand img{height:88px;}
-  .brand:hover img{transform:rotate(-8deg) scale(1.06);}
   .brand-text{display:flex;flex-direction:column;line-height:1;}
   .brand-text .name{font-family:'Space Grotesk';font-weight:700;font-size:16.5px;letter-spacing:0.01em;}
   .brand-text .sub{font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:0.14em;color:var(--grey);text-transform:uppercase;margin-top:2px;}
@@ -402,11 +401,18 @@
   /* ===== PRODUCT GRID ===== */
   .grid{
     display:grid;grid-template-columns:repeat(4,1fr);gap:22px;
+    transition:opacity .18s ease;
+  }
+  .grid.grid-switching{opacity:0;}
+  @keyframes cardSlideUp{
+    from{opacity:0;transform:translateY(26px) scale(.97);}
+    to{opacity:1;transform:translateY(0) scale(1);}
   }
   .card{
     background:var(--card-bg);border:1px solid var(--line);
     position:relative;overflow:hidden;
     transition:transform .18s ease, box-shadow .18s ease, border-color .18s;
+    animation:cardSlideUp .55s cubic-bezier(.22,.9,.28,1) backwards;
   }
   .card:hover{transform:translateY(-4px);box-shadow:0 16px 32px -18px rgba(37,38,43,.28);border-color:var(--grey-light);}
   .card-media{
@@ -447,11 +453,6 @@
   .card-footer{display:flex;align-items:center;justify-content:space-between;}
   .card-price{font-family:'IBM Plex Mono';font-size:15px;font-weight:500;}
   .card-price .unit{font-size:10px;color:var(--grey-light);font-family:'Inter';}
-  .card-add{
-    width:32px;height:32px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
-    transition:all .15s;
-  }
-  .card-add:hover{background:var(--ink);border-color:var(--ink);color:#fff;}
   .card{cursor:pointer;}
 
   /* ===== PRODUCT VIEW MODAL ===== */
@@ -582,18 +583,109 @@
     .navsearch{max-width:220px;}
   }
   @media(max-width:640px){
-    .navsearch{margin:0 12px;padding:7px 12px;}
+    .navsearch{margin:0 10px;padding:7px 12px;flex:1;max-width:none;}
+    .navsearch input{min-width:0;text-overflow:ellipsis;}
     .navicons{gap:4px;margin-left:0;}
     .icon-btn{width:34px;height:34px;}
     .icon-btn svg{width:18px;height:18px;}
     .grid{grid-template-columns:repeat(2,1fr);gap:14px;}
     .wrap{padding:0 18px;}
-    .section{padding:60px 0;}
-    .foot-grid{grid-template-columns:1fr;}
-    header{padding:14px 0;}
-    header.scrolled{padding:8px 0;}
-    .brand img{height:112px;}
-    header.scrolled .brand img{height:76px;}
+    .section{padding:48px 0;}
+    .section-head{margin-bottom:28px;}
+    .foot-grid{grid-template-columns:1fr;gap:28px;padding:48px 0 28px;}
+    .foot-brand p{max-width:none;}
+    .foot-bottom{flex-direction:column;gap:6px;align-items:flex-start;padding:18px 0;}
+    header{padding:10px 0;}
+    header.scrolled{padding:6px 0;}
+    .brand img{height:64px;}
+    header.scrolled .brand img{height:48px;}
+    .hero{padding-top:112px;}
+    .hero-grid{gap:32px;}
+    .hero-visual{height:240px;}
+    .hero p.lede{max-width:none;}
+    .hero-ctas{flex-direction:column;gap:10px;}
+    .hero-ctas .btn{width:100%;justify-content:center;}
+    .why .wrap{padding:56px 18px;}
+    .why-grid{grid-template-columns:1fr;gap:24px;}
+    .band{padding:60px 0;}
+    .ticker-viber .tv-text{display:none;}
+    .ticker-viber{padding:0 14px;}
+    .ticker-live{padding:0 14px;font-size:10px;}
+  }
+  @media(max-width:400px){
+    .brand img{height:52px;}
+    header.scrolled .brand img{height:40px;}
+    .hero{padding-top:98px;}
+    .navsearch input{font-size:12.5px;}
+  }
+
+  /* ===== VIBER FLOATING BUBBLE ===== */
+  .viber-fab{
+    position:fixed;right:22px;bottom:24px;z-index:900;
+    display:flex;align-items:center;gap:10px;
+    font-family:'Inter',sans-serif;
+  }
+  .viber-fab-text{
+    background:#fff;color:var(--ink,#1a1a1a);font-size:13px;font-weight:600;
+    padding:9px 16px;border-radius:999px;white-space:nowrap;
+    box-shadow:0 6px 18px rgba(0,0,0,.14);
+    opacity:0;transform:translateX(8px) scale(.92);
+    animation:vfTextPeek 5s ease-in-out infinite;
+  }
+  @keyframes vfTextPeek{
+    0%{opacity:0;transform:translateX(8px) scale(.92);}
+    8%{opacity:1;transform:translateX(0) scale(1);}
+    22%{opacity:1;transform:translateX(0) scale(1);}
+    32%{opacity:0;transform:translateX(8px) scale(.92);}
+    100%{opacity:0;transform:translateX(8px) scale(.92);}
+  }
+  .viber-fab-btn{
+    position:relative;width:58px;height:58px;border-radius:50%;flex-shrink:0;
+    background:#7b5fd9;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 22px rgba(123,95,217,.45);cursor:pointer;
+    text-decoration:none;
+    animation:vfPulse 2.6s ease-in-out infinite;
+  }
+  .viber-fab-btn:hover{background:#6a4fc4;}
+  @keyframes vfPulse{
+    0%,100%{box-shadow:0 8px 22px rgba(123,95,217,.45),0 0 0 0 rgba(123,95,217,.5);}
+    50%{box-shadow:0 8px 22px rgba(123,95,217,.45),0 0 0 10px rgba(123,95,217,0);}
+  }
+  .viber-fab-icon-stage{position:relative;width:28px;height:28px;}
+  .viber-fab-icon-stage svg,
+  .viber-fab-icon-stage span{
+    position:absolute;inset:0;width:28px;height:28px;
+    display:flex;align-items:center;justify-content:center;
+    backface-visibility:hidden;
+  }
+  .vf-icon-viber{animation:vfSwapViber 3.4s ease-in-out infinite;}
+  .vf-icon-hand{
+    transform-origin:70% 70%;
+    animation:vfSwapHand 3.4s ease-in-out infinite;
+  }
+  @keyframes vfSwapViber{
+    0%,42%{opacity:1;transform:rotateY(0deg) scale(1);}
+    50%,92%{opacity:0;transform:rotateY(180deg) scale(.6);}
+    100%{opacity:1;transform:rotateY(360deg) scale(1);}
+  }
+  @keyframes vfSwapHand{
+    0%,42%{opacity:0;transform:rotateY(-180deg) scale(.6) rotate(0deg);}
+    50%{opacity:1;transform:rotateY(0deg) scale(1) rotate(0deg);}
+    58%{transform:rotateY(0deg) scale(1) rotate(14deg);}
+    64%{transform:rotateY(0deg) scale(1) rotate(-10deg);}
+    70%{transform:rotateY(0deg) scale(1) rotate(14deg);}
+    76%,92%{opacity:1;transform:rotateY(0deg) scale(1) rotate(0deg);}
+    100%{opacity:0;transform:rotateY(180deg) scale(.6) rotate(0deg);}
+  }
+  .viber-fab-dot{
+    position:absolute;top:2px;right:2px;width:12px;height:12px;border-radius:50%;
+    background:#ff5c5c;border:2px solid #fff;z-index:2;
+    animation:pulseDot 1.5s ease-in-out infinite;
+  }
+  @media(max-width:480px){
+    .viber-fab{right:14px;bottom:16px;}
+    .viber-fab-btn{width:52px;height:52px;}
+    .viber-fab-text{font-size:12px;padding:8px 14px;}
   }
 </style>
 </head>
@@ -701,7 +793,7 @@
       <div class="ticker-track" id="tickerTrack"></div>
     </div>
     <!-- Replace href below with your actual Viber community invite link -->
-    <a href="https://invite.viber.com/?g=YOUR_INVITE_CODE" target="_blank" rel="noopener" class="ticker-viber">
+    <a href="https://invite.viber.com/?g2=AQB5Hzm0PAPYD1EIyK%2FJAWZPsy%2FNf30Uav2evOpddFJopdHli%2Bg%2B9jayAxi2gWsD" target="_blank" rel="noopener" class="ticker-viber">
       <span class="tv-icon-wrap">
         <svg viewBox="0 0 32 32" width="24" height="24">
           <path d="M9 2h14a7 7 0 0 1 7 7v9a7 7 0 0 1-7 7h-6.2l-5.1 4.3c-.6.5-1.5.1-1.5-.7v-3.9A7 7 0 0 1 3 18V9a7 7 0 0 1 7-7z" fill="#fff"/>
@@ -709,7 +801,7 @@
         </svg>
         <span class="viber-dot"></span>
       </span>
-      Join our Viber Community
+      <span class="tv-text">Join our Viber Community</span>
     </a>
   </div>
 </section>
@@ -873,51 +965,52 @@ function getFilteredProducts(){
 }
 
 function renderProducts(){
-  grid.innerHTML = "";
-  const items = getFilteredProducts();
+  const isFirstRender = grid.children.length === 0;
+  grid.classList.add('grid-switching');
+  window.clearTimeout(renderProducts._t);
+  renderProducts._t = window.setTimeout(() => {
+    grid.innerHTML = "";
+    const items = getFilteredProducts();
 
-  if(items.length === 0){
-    grid.innerHTML = `
-      <div class="no-results" style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--grey);">
-        <p style="font-family:'Space Grotesk';font-size:18px;font-weight:600;color:var(--ink);margin-bottom:6px;">No products found</p>
-        <p style="font-size:13.5px;">Try a different search term or category.</p>
-      </div>
-    `;
-    return;
-  }
-
-  items.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="card-media">
-        ${p.stock === 'low' ? '<span class="stock-flag low">Low Stock</span>' : '<span class="stock-flag">In Stock</span>'}
-        ${p.img
-          ? `<img src="${p.img}" alt="${p.name}">`
-          : `<div class="placeholder-mark">${placeholderIcon}<span>Add Photo</span></div>`
-        }
-      </div>
-      <div class="card-body">
-        <span class="card-cat">${p.cat}</span>
-        <div class="card-title">${p.name}</div>
-        <div class="card-sku">SKU ${p.sku}</div>
-        <div class="card-footer">
-          <div class="card-price">${p.price}<span class="unit"> ${p.unit}</span></div>
-          <div class="card-add">+</div>
+    if(items.length === 0){
+      grid.innerHTML = `
+        <div class="no-results" style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--grey);">
+          <p style="font-family:'Space Grotesk';font-size:18px;font-weight:600;color:var(--ink);margin-bottom:6px;">No products found</p>
+          <p style="font-size:13.5px;">Try a different search term or category.</p>
         </div>
-      </div>
-    `;
-    grid.appendChild(card);
-
-    card.addEventListener('click', () => openProductModal(p));
-    const addBtn = card.querySelector('.card-add');
-    if(addBtn){
-      addBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        openProductModal(p);
-      });
+      `;
+      grid.classList.remove('grid-switching');
+      return;
     }
-  });
+
+    items.forEach((p, idx) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.animationDelay = Math.min(idx * 45, 450) + 'ms';
+      card.innerHTML = `
+        <div class="card-media">
+          ${p.stock === 'low' ? '<span class="stock-flag low">Low Stock</span>' : '<span class="stock-flag">In Stock</span>'}
+          ${p.img
+            ? `<img src="${p.img}" alt="${p.name}">`
+            : `<div class="placeholder-mark">${placeholderIcon}<span>Add Photo</span></div>`
+          }
+        </div>
+        <div class="card-body">
+          <span class="card-cat">${p.cat}</span>
+          <div class="card-title">${p.name}</div>
+          <div class="card-sku">SKU ${p.sku}</div>
+          <div class="card-footer">
+            <div class="card-price">${p.price}<span class="unit"> ${p.unit}</span></div>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+
+      card.addEventListener('click', () => openProductModal(p));
+    });
+
+    grid.classList.remove('grid-switching');
+  }, isFirstRender ? 0 : 140);
 }
 renderProducts();
 
@@ -1043,6 +1136,9 @@ document.querySelectorAll('.cat-drawer-item').forEach(item => {
   item.addEventListener('click', () => {
     selectCategory(item.dataset.cat);
     closeCatDrawer();
+    window.setTimeout(() => {
+      document.getElementById('productGrid').scrollIntoView({ behavior:'smooth', block:'start' });
+    }, 350);
   });
 });
 
@@ -1206,6 +1302,31 @@ pmAddBtn.addEventListener('click', () => {
   }, 1400);
 });
 </script>
+
+<!-- ===== VIBER FLOATING BUBBLE ===== -->
+<!-- Replace href below with your actual Viber community/chat link -->
+<a href="https://invite.viber.com/?g=YOUR_INVITE_CODE" target="_blank" rel="noopener" class="viber-fab">
+  <span class="viber-fab-text">Chat on Viber</span>
+  <span class="viber-fab-btn">
+    <span class="viber-fab-icon-stage">
+      <svg class="vf-icon-viber" viewBox="0 0 32 32" width="28" height="28" fill="none">
+        <path d="M9 3.3h14a6.7 6.7 0 0 1 6.7 6.7v7.4a6.7 6.7 0 0 1-6.7 6.7h-5.9l-5.4 4.5c-.6.5-1.5.1-1.5-.7v-4a6.7 6.7 0 0 1-6.6-6.5V10A6.7 6.7 0 0 1 9 3.3z" stroke="#fff" stroke-width="1.9" stroke-linejoin="round"/>
+        <path d="M20.4 18.7c-.3-.15-1.6-.8-1.9-.9-.24-.1-.42-.14-.6.14-.19.28-.7.9-.85 1.08-.15.18-.31.19-.58.06-.3-.15-1.24-.46-2.36-1.47-.87-.78-1.46-1.74-1.63-2.04-.17-.29-.02-.45.13-.6.13-.13.3-.34.44-.5.15-.18.19-.3.3-.5.1-.19.05-.37-.02-.52-.08-.15-.6-1.5-.85-2.05-.22-.53-.45-.46-.62-.47h-.53c-.18 0-.47.06-.72.35-.24.29-.94.92-.94 2.24 0 1.32.97 2.6 1.1 2.78.14.18 1.9 2.9 4.6 4.07.65.28 1.15.44 1.55.57.65.2 1.24.18 1.7.11.53-.08 1.6-.65 1.83-1.28.23-.63.23-1.16.16-1.28-.06-.12-.25-.19-.53-.34z" fill="#fff"/>
+        <path d="M17.6 8.4a5.6 5.6 0 0 1 4.3 4.3" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M18 5.7a8.5 8.5 0 0 1 6.6 6.6" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      <svg class="vf-icon-hand" viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 12V6a1.5 1.5 0 0 1 3 0v5.3"/>
+        <path d="M11 10.8V4.5a1.5 1.5 0 0 1 3 0v6.3"/>
+        <path d="M14 10.8V6.2a1.5 1.5 0 0 1 3 0v6.1"/>
+        <path d="M17 12.3a1.5 1.5 0 0 1 3 0v3.1A6.6 6.6 0 0 1 13.4 22h-1.5a6.6 6.6 0 0 1-5.9-3.6l-2-4a1.4 1.4 0 0 1 2.5-1.3L8 15.8"/>
+        <path d="M3.2 4.4 5 6.1" opacity=".85"/>
+        <path d="M2.4 9h2.5" opacity=".85"/>
+      </svg>
+    </span>
+    <span class="viber-fab-dot"></span>
+  </span>
+</a>
 
 </body>
 </html>
