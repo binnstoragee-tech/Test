@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Outright Trading</title>
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="shortcut icon" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#25262b;
+    --paper:#eef0ee;
+    --paper-raised:#f8f9f7;
+    --grey:#6e6e76;
+    --grey-light:#9a9aa1;
+    --line:#d5d7d3;
+    --green:#3f6b52;
+    --green-deep:#2c4d3b;
+    --rust:#a8432f;
+    --card-bg:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  html,body{width:100%;overflow-x:hidden;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.01em;}
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  .wrap{width:100%;max-width:960px;margin:0 auto;padding:0 clamp(20px,4vw,32px);}
+
+  /* ===== SIMPLE PAGE HEADER ===== */
+  header{
+    position:sticky;top:0;z-index:200;
+    padding:16px 0;
+    background:rgba(238,240,238,.9);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  header .wrap{max-width:1180px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .brand{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .brand img{height:38px;width:auto;object-fit:contain;}
+  .go-back{
+    display:inline-flex;align-items:center;gap:7px;
+    background:none;border:1px solid var(--line);border-radius:999px;
+    padding:9px 16px;font-family:'Inter';font-size:13.5px;font-weight:600;
+    color:var(--ink);cursor:pointer;transition:border-color .2s,background .2s;
+  }
+  .go-back:hover{border-color:var(--green-deep);background:rgba(63,107,82,.06);}
+  .go-back svg{width:15px;height:15px;}
+  .head-actions{display:flex;align-items:center;gap:14px;}
+  .head-icon{
+    display:flex;align-items:center;justify-content:center;
+    width:36px;height:36px;border-radius:50%;color:var(--ink);
+  }
+  .head-icon svg{width:19px;height:19px;}
+  .btn-login{
+    background:var(--green-deep);color:#fff;border:none;border-radius:999px;
+    padding:10px 20px;font-family:'Inter';font-size:13.5px;font-weight:700;cursor:pointer;
+    transition:background .2s;
+  }
+  .btn-login:hover{background:var(--green);}
+  @media(max-width:640px){
+    .head-icon,.btn-login{display:none;}
+  }
+
+  /* ===== PAGE TITLE ===== */
+  .legal-hero{padding:56px 0 36px;border-bottom:1px solid var(--line);}
+  .eyebrow{
+    font-family:'IBM Plex Mono';font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--green-deep);display:flex;align-items:center;gap:10px;margin-bottom:18px;
+  }
+  .eyebrow::before{content:'';width:22px;height:1px;background:var(--green-deep);display:inline-block;}
+  .legal-hero h1{font-size:clamp(30px,4vw,42px);font-weight:700;margin-bottom:14px;}
+  .legal-hero .lede{font-size:15.5px;color:var(--grey);max-width:620px;line-height:1.65;}
+  .legal-updated{
+    display:inline-flex;align-items:center;gap:8px;margin-top:20px;
+    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--grey-light);
+  }
+  .legal-updated span.dot{width:5px;height:5px;border-radius:50%;background:var(--green-deep);}
+
+  /* ===== TOC ===== */
+  .toc-section{padding:32px 0;border-bottom:1px solid var(--line);}
+  .toc-card{
+    background:var(--card-bg);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;
+  }
+  .toc-card h3{
+    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--grey);margin-bottom:14px;
+  }
+  .toc-list{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;list-style:none;}
+  .toc-list li a{
+    display:flex;align-items:baseline;gap:10px;
+    font-size:13.5px;color:var(--ink);padding:5px 0;
+    border-bottom:1px dashed transparent;transition:border-color .2s,color .2s;
+  }
+  .toc-list li a:hover{color:var(--green-deep);border-color:var(--green-deep);}
+  .toc-list li a .num{font-family:'IBM Plex Mono';color:var(--grey-light);font-size:12px;flex-shrink:0;}
+  @media(max-width:640px){.toc-list{grid-template-columns:1fr;}}
+
+  /* ===== CONTENT ===== */
+  .legal-body{padding:48px 0 80px;}
+  .legal-section{padding:34px 0;border-bottom:1px solid var(--line);}
+  .legal-section:last-child{border-bottom:none;}
+  .legal-section .tag{
+    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.1em;color:var(--green-deep);
+    margin-bottom:10px;display:block;
+  }
+  .legal-section h2{font-size:21px;font-weight:700;margin-bottom:14px;scroll-margin-top:90px;}
+  .legal-section p{font-size:14.5px;line-height:1.75;color:var(--grey);margin-bottom:12px;}
+  .legal-section p:last-child{margin-bottom:0;}
+  .legal-section ul{margin:12px 0 4px;padding-left:0;list-style:none;}
+  .legal-section ul li{
+    position:relative;padding-left:20px;font-size:14.5px;line-height:1.7;color:var(--grey);margin-bottom:9px;
+  }
+  .legal-section ul li::before{
+    content:'';position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--green-deep);opacity:.55;
+  }
+  .legal-section strong{color:var(--ink);font-weight:600;}
+  .legal-note{
+    margin-top:16px;padding:16px 18px;border-left:2px solid var(--green-deep);
+    background:var(--paper-raised);border-radius:0 8px 8px 0;
+  }
+  .legal-note p{color:var(--ink);font-size:13.5px;margin:0;}
+
+  /* ===== CONTACT CARD ===== */
+  .contact-card{
+    background:var(--ink);color:#fff;border-radius:16px;
+    padding:34px 32px;margin-top:8px;
+    display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:20px;
+  }
+  .contact-card h3{font-size:19px;margin-bottom:6px;}
+  .contact-card p{font-size:13.5px;color:rgba(255,255,255,.65);max-width:360px;line-height:1.6;}
+  .contact-links{display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono';font-size:12.5px;}
+  .contact-links a{color:#fff;opacity:.85;}
+  .contact-links a:hover{opacity:1;color:#7fbf9a;}
+
+  /* ===== FOOTER (matches main site) ===== */
+  footer{background:var(--paper-raised);border-top:1px solid var(--line);}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px;padding:64px 0 40px;max-width:1180px;margin:0 auto;padding-left:clamp(24px,4vw,72px);padding-right:clamp(24px,4vw,72px);}
+  .foot-brand .brand{margin-bottom:14px;}
+  .foot-brand img{height:32px;}
+  .foot-brand p{color:var(--grey);font-size:13.5px;line-height:1.6;max-width:260px;}
+  .foot-col h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;color:var(--grey);}
+  .foot-col a{display:block;font-size:14px;margin-bottom:11px;color:var(--ink);}
+  .foot-col a:hover{color:var(--green-deep);}
+  .foot-bottom{
+    max-width:1180px;margin:0 auto;padding:22px clamp(24px,4vw,72px);
+    border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;font-size:12px;color:var(--grey-light);
+    font-family:'IBM Plex Mono';
+  }
+  @media(max-width:980px){.foot-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:640px){
+    .foot-grid{grid-template-columns:1fr;gap:28px;padding:48px clamp(20px,4vw,32px) 28px;}
+    .foot-brand p{max-width:none;}
+    .foot-bottom{flex-direction:column;gap:6px;align-items:flex-start;padding:18px clamp(20px,4vw,32px);}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <a href="index.html" class="brand">
+        <img src="img/logo.png" alt="Outright Trading logo">
+      </a>
+      <a href="index.html" class="go-back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        Go Back
+      </a>
+    </div>
+    <div class="head-actions">
+      <a href="index.html#cart" class="head-icon" aria-label="Cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"/></svg>
+      </a>
+      <a href="index.html" class="btn-login">Login / Register</a>
+    </div>
+  </nav>
+</header>
+
+<section class="legal-hero">
+  <div class="wrap">
+    <div class="eyebrow">Legal</div>
+    <h1>Privacy Policy</h1>
+    <p class="lede">This policy explains what information Outright Trading collects when you browse, register, or place orders through our platform, how we use it, and the choices you have.</p>
+    <div class="legal-updated"><span class="dot"></span>Last updated — July 2026</div>
+  </div>
+</section>
+
+<section class="toc-section">
+  <div class="wrap">
+    <div class="toc-card">
+      <h3>On this page</h3>
+      <ul class="toc-list">
+        <li><a href="#collect"><span class="num">01</span>Information We Collect</a></li>
+        <li><a href="#use"><span class="num">02</span>How We Use Your Information</a></li>
+        <li><a href="#accounts"><span class="num">03</span>Accounts &amp; Login</a></li>
+        <li><a href="#cookies"><span class="num">04</span>Cookies &amp; Tracking</a></li>
+        <li><a href="#sharing"><span class="num">05</span>Sharing Your Information</a></li>
+        <li><a href="#security"><span class="num">06</span>Data Security</a></li>
+        <li><a href="#rights"><span class="num">07</span>Your Rights &amp; Choices</a></li>
+        <li><a href="#retention"><span class="num">08</span>Data Retention</a></li>
+        <li><a href="#children"><span class="num">09</span>Children's Privacy</a></li>
+        <li><a href="#changes"><span class="num">10</span>Changes to This Policy</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="legal-body">
+  <div class="wrap">
+
+    <div class="legal-section" id="collect">
+      <span class="tag">01 — SCOPE</span>
+      <h2>Information We Collect</h2>
+      <p>We collect information you provide directly to us, information gathered automatically as you use the site, and information related to the orders and inquiries you place with Outright Trading.</p>
+      <ul>
+        <li><strong>Account details</strong> — your name, mobile number, email address, and password when you register for an account.</li>
+        <li><strong>Business details</strong> — company name and business type, for customers ordering on a wholesale or business account.</li>
+        <li><strong>Order &amp; inquiry information</strong> — products viewed, cart contents, quotation requests, and order history.</li>
+        <li><strong>Communication data</strong> — messages sent through our chat, contact forms, or customer support channels.</li>
+        <li><strong>Technical data</strong> — IP address, browser type, device information, and pages visited, collected automatically through your browser.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="use">
+      <span class="tag">02 — PURPOSE</span>
+      <h2>How We Use Your Information</h2>
+      <p>We use the information we collect to operate the platform and serve your orders, specifically to:</p>
+      <ul>
+        <li>Create and manage your account, and verify your identity when you log in.</li>
+        <li>Process inquiries, quotations, and orders, and communicate with you about their status.</li>
+        <li>Respond to questions sent through live chat or our contact channels.</li>
+        <li>Improve site performance, product listings, and the overall shopping experience.</li>
+        <li>Detect, prevent, and address fraud, abuse, or security issues.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="accounts">
+      <span class="tag">03 — YOUR ACCOUNT</span>
+      <h2>Accounts &amp; Login</h2>
+      <p>Logging in with your mobile number or email and a password lets us keep your order history, saved quotations, and business details tied to one place. Your password is stored in encrypted form — we cannot see or recover it, so if you forget it, you'll need to reset it through the <strong>Forgot password</strong> link on the login screen.</p>
+      <div class="legal-note">
+        <p>Keep your login details private. Contact us immediately if you believe your account has been accessed without your permission.</p>
+      </div>
+    </div>
+
+    <div class="legal-section" id="cookies">
+      <span class="tag">04 — COOKIES</span>
+      <h2>Cookies &amp; Tracking</h2>
+      <p>We use cookies and similar technologies to keep you signed in, remember items in your cart, and understand how the site is used so we can improve it. You can control or disable cookies through your browser settings, though some parts of the site — such as staying logged in or checking out — may not work properly without them.</p>
+    </div>
+
+    <div class="legal-section" id="sharing">
+      <span class="tag">05 — THIRD PARTIES</span>
+      <h2>Sharing Your Information</h2>
+      <p>We do not sell your personal information. We only share it in the following situations:</p>
+      <ul>
+        <li><strong>Service providers</strong> — trusted vendors who help us run the platform, such as hosting, payment, and delivery partners, bound to use your data only to provide that service.</li>
+        <li><strong>Legal requirements</strong> — where disclosure is required to comply with the law, respond to a valid legal request, or protect the rights and safety of Outright Trading and our customers.</li>
+        <li><strong>Business transfers</strong> — in the event of a merger, acquisition, or sale of assets, customer information may be transferred as part of that transaction.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="security">
+      <span class="tag">06 — SAFEGUARDS</span>
+      <h2>Data Security</h2>
+      <p>We apply reasonable technical and organizational safeguards to protect your information from unauthorized access, alteration, or disclosure, including encrypted password storage and access controls on our internal systems. No method of transmission over the internet is completely secure, so while we work to protect your information, we cannot guarantee absolute security.</p>
+    </div>
+
+    <div class="legal-section" id="rights">
+      <span class="tag">07 — YOUR CHOICES</span>
+      <h2>Your Rights &amp; Choices</h2>
+      <p>You can review and update your account details at any time from your profile page. You may also:</p>
+      <ul>
+        <li>Request a copy of the personal information we hold about you.</li>
+        <li>Ask us to correct inaccurate or incomplete information.</li>
+        <li>Request that your account and associated data be deleted, subject to any records we're required to keep for legal or accounting purposes.</li>
+      </ul>
+      <p>To make any of these requests, reach out through the contact details below.</p>
+    </div>
+
+    <div class="legal-section" id="retention">
+      <span class="tag">08 — RETENTION</span>
+      <h2>Data Retention</h2>
+      <p>We retain your account and order information for as long as your account remains active, and for a reasonable period afterward to meet our legal, accounting, and business record-keeping requirements. When information is no longer needed for these purposes, we take steps to securely delete or anonymize it.</p>
+    </div>
+
+    <div class="legal-section" id="children">
+      <span class="tag">09 — AGE LIMIT</span>
+      <h2>Children's Privacy</h2>
+      <p>Outright Trading is a wholesale platform intended for business and retail customers. We do not knowingly collect personal information from children, and our services are not directed at individuals under the age of 18.</p>
+    </div>
+
+    <div class="legal-section" id="changes">
+      <span class="tag">10 — UPDATES</span>
+      <h2>Changes to This Policy</h2>
+      <p>We may update this policy from time to time to reflect changes in our practices or for legal and regulatory reasons. When we make material changes, we'll update the "last updated" date at the top of this page. We encourage you to review this page periodically.</p>
+
+      <div class="contact-card">
+        <div>
+          <h3>Questions about this policy?</h3>
+          <p>Reach out and our team will get back to you.</p>
+        </div>
+        <div class="contact-links">
+          <a href="mailto:orders@outrighttrading.mv">orders@outrighttrading.mv</a>
+          <a href="tel:+9600000000">+960 000 0000</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <a href="index.html" class="brand">
+        <img src="img/logo.png" alt="Outright Trading logo">
+      </a>
+      <p>Wholesale supply for retailers and businesses. Direct sourcing, transparent stock, no surprises.</p>
+    </div>
+    <div class="foot-col">
+      <h4>Shop</h4>
+      <a href="index.html#products">Categories</a>
+      <a href="index.html#products">Catalogue</a>
+      <a href="index.html">New Arrivals</a>
+    </div>
+    <div class="foot-col">
+      <h4>Company</h4>
+      <a href="index.html#why">Why Outright</a>
+      <a href="index.html">Wholesale Terms</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+    <div class="foot-col">
+      <h4>Get in touch</h4>
+      <a href="mailto:orders@outrighttrading.mv">orders@outrighttrading.mv</a>
+      <a href="tel:+9600000000">+960 000 0000</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 OUTRIGHT TRADING</span>
+    <span>MALE, MALDIVES</span>
+  </div>
+</footer>
+
+</body>
+</html>

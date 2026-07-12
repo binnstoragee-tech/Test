@@ -24,7 +24,7 @@
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
-  html,body{width:100%;overflow-x:hidden;}
+  html,body{width:100%;overflow-x:clip;}
   body{
     background:var(--paper);
     color:var(--ink);
@@ -124,11 +124,55 @@
     font-size:9.5px;font-weight:700;line-height:16px;text-align:center;
     box-shadow:0 0 0 2px var(--paper);
   }
+  .icon-btn .badge:empty{display:none;}
   .icon-btn.profile{
     background:var(--ink);color:#fff;width:38px;height:38px;
   }
   .icon-btn.profile:hover{background:var(--green-deep);}
-  .icon-btn.profile svg{width:19px;height:19px;}
+  .icon-btn.profile svg.profile-guest-icon{width:19px;height:19px;}
+
+  .profile-wrap{position:relative;}
+  .profile-chip{display:none;align-items:center;gap:8px;}
+  .icon-btn.profile.logged-in{
+    width:auto;height:38px;border-radius:999px;padding:0 12px 0 4px;
+    background:var(--paper);color:var(--ink);border:1px solid var(--line);
+  }
+  .icon-btn.profile.logged-in:hover{background:#fff;border-color:var(--ink);}
+  .icon-btn.profile.logged-in .profile-guest-icon{display:none;}
+  .icon-btn.profile.logged-in .profile-chip{display:flex;}
+  .profile-avatar{
+    width:28px;height:28px;border-radius:50%;flex-shrink:0;
+    background:var(--green-deep);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Space Grotesk';font-size:12px;font-weight:700;text-transform:uppercase;
+  }
+  .profile-name{
+    font-family:'Inter';font-size:13px;font-weight:600;color:var(--ink);
+    max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .profile-chevron{width:14px;height:14px;color:var(--grey);flex-shrink:0;transition:transform .25s cubic-bezier(.22,1,.36,1);}
+  .icon-btn.profile[aria-expanded="true"] .profile-chevron{transform:rotate(180deg);}
+
+  .profile-menu{
+    position:absolute;top:calc(100% + 10px);right:0;z-index:60;
+    min-width:190px;background:#fff;border:1px solid var(--line);border-radius:14px;
+    box-shadow:0 20px 45px -15px rgba(20,22,20,.3);
+    padding:8px;
+    opacity:0;visibility:hidden;transform:translateY(-6px) scale(.98);
+    transition:opacity .2s ease,visibility .2s,transform .2s cubic-bezier(.22,1,.36,1);
+  }
+  .profile-menu.open{opacity:1;visibility:visible;transform:translateY(0) scale(1);}
+  .profile-menu-item{
+    display:flex;align-items:center;gap:10px;width:100%;
+    padding:10px 12px;border:none;background:none;border-radius:8px;
+    font-family:'Inter';font-size:13.5px;font-weight:500;color:var(--ink);
+    cursor:pointer;text-align:left;transition:background .15s,color .15s;
+  }
+  .profile-menu-item svg{width:16px;height:16px;color:var(--grey);flex-shrink:0;transition:color .15s;}
+  .profile-menu-item:hover{background:var(--paper);}
+  .profile-menu-item.logout{color:var(--rust);}
+  .profile-menu-item.logout svg{color:var(--rust);}
+  .profile-menu-item.logout:hover{background:rgba(180,70,50,.08);}
 
   .cat-trigger{
     display:flex;align-items:center;gap:8px;
@@ -140,6 +184,44 @@
   .cat-trigger svg{width:16px;height:16px;color:var(--green-deep);}
   .cat-trigger:hover{border-color:var(--green-deep);background:rgba(63,107,82,.06);}
   .cat-trigger:active{transform:scale(.96);}
+
+  /* ===== CATEGORY SIDEBAR (persistent, homepage catalogue) ===== */
+  .products-layout{display:flex;gap:32px;align-items:flex-start;}
+  .products-main{flex:1;min-width:0;}
+  .cat-sidebar{
+    display:none;width:230px;flex-shrink:0;
+    border:1px solid var(--line);border-radius:16px;
+    padding:8px;background:var(--card-bg);
+    position:sticky;top:110px;bottom:20px;
+  }
+  .cat-sidebar-title{
+    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--grey);padding:14px 16px 10px;
+  }
+  .cat-side-item{
+    display:flex;align-items:center;gap:12px;
+    width:100%;text-align:left;background:none;border:none;
+    padding:13px 14px;border-radius:10px;cursor:pointer;
+    font-family:'Inter';font-size:13.5px;font-weight:600;letter-spacing:.02em;
+    color:var(--ink);text-transform:uppercase;
+    transition:background .2s,color .2s;
+  }
+  .cat-side-item .dot{
+    width:6px;height:6px;border-radius:50%;background:var(--line);flex-shrink:0;
+    transition:background .2s,transform .2s;
+  }
+  .cat-side-item:hover{background:rgba(63,107,82,.07);color:var(--green-deep);}
+  .cat-side-item:hover .dot{background:var(--green-deep);transform:scale(1.3);}
+  .cat-side-item.active{background:var(--ink);color:#fff;}
+  .cat-side-item.active .dot{background:var(--green);transform:scale(1.3);}
+
+  @media(min-width:900px){
+    .cat-sidebar{display:block;}
+    #products .cat-trigger{display:none;}
+  }
+  @media(min-width:900px) and (max-width:1280px){
+    #products .grid{grid-template-columns:repeat(3,1fr);}
+  }
 
   /* ===== CATEGORY DRAWER ===== */
   .cat-overlay{
@@ -201,52 +283,107 @@
   .cat-drawer-item.active{background:var(--ink);color:#fff;}
   .cat-drawer-item.active .dot{background:var(--green);transform:scale(1.3);}
 
-  /* ===== HERO ===== */
+  /* ===== CART DRAWER ===== */
+  .cart-overlay{
+    position:fixed;inset:0;z-index:1300;
+    background:rgba(20,22,20,.42);
+    backdrop-filter:blur(2px);
+    opacity:0;visibility:hidden;
+    transition:opacity .4s ease,visibility .4s;
+  }
+  .cart-overlay.open{opacity:1;visibility:visible;}
+  .cart-drawer{
+    position:fixed;top:0;right:0;height:100%;width:min(400px,90vw);
+    background:#fff;z-index:1301;
+    box-shadow:-24px 0 60px rgba(20,22,20,.18);
+    transform:translateX(100%);
+    transition:transform .5s cubic-bezier(.22,1,.36,1);
+    display:flex;flex-direction:column;
+  }
+  .cart-overlay.open .cart-drawer{transform:translateX(0);}
+  .cart-drawer-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 24px;border-bottom:1px solid var(--line);
+  }
+  .cart-drawer-head h3{font-family:'Space Grotesk';font-size:19px;font-weight:600;}
+  .cart-drawer-head .cd-count{
+    font-family:'IBM Plex Mono';font-size:11px;color:var(--grey-light);
+    text-transform:uppercase;letter-spacing:.08em;
+  }
+  .cart-close{
+    display:flex;align-items:center;justify-content:center;
+    width:34px;height:34px;border-radius:50%;border:none;
+    background:var(--paper);color:var(--ink);cursor:pointer;
+    transition:background .2s,transform .3s cubic-bezier(.22,1,.36,1);
+  }
+  .cart-close svg{width:16px;height:16px;}
+  .cart-close:hover{background:var(--line);transform:rotate(90deg);}
+  .cart-items{padding:8px 16px;overflow-y:auto;flex:1;}
+  .cart-item{
+    display:flex;gap:12px;align-items:center;
+    padding:14px 8px;border-bottom:1px solid var(--line);
+  }
+  .cart-item-media{
+    width:60px;height:60px;border-radius:10px;flex-shrink:0;
+    background:var(--paper);display:flex;align-items:center;justify-content:center;
+    overflow:hidden;color:var(--grey-light);
+  }
+  .cart-item-media img{width:100%;height:100%;object-fit:cover;}
+  .cart-item-media svg{width:22px;height:22px;}
+  .cart-item-info{flex:1;min-width:0;}
+  .cart-item-name{font-family:'Inter';font-size:13.5px;font-weight:600;color:var(--ink);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .cart-item-sku{font-family:'IBM Plex Mono';font-size:10px;color:var(--grey-light);margin-top:2px;}
+  .cart-item-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+  .cart-item-qty{
+    display:flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:999px;
+    overflow:hidden;
+  }
+  .cart-item-qty button{
+    width:24px;height:24px;border:none;background:none;cursor:pointer;
+    font-size:14px;color:var(--ink);display:flex;align-items:center;justify-content:center;
+    transition:background .2s;
+  }
+  .cart-item-qty button:hover{background:var(--paper);}
+  .cart-item-qty span{font-family:'IBM Plex Mono';font-size:12px;min-width:20px;text-align:center;}
+  .cart-item-price{font-family:'IBM Plex Mono';font-size:12.5px;font-weight:500;color:var(--green-deep);}
+  .cart-item-remove{
+    background:none;border:none;cursor:pointer;color:var(--grey-light);
+    padding:4px;display:flex;align-items:center;justify-content:center;
+    transition:color .2s;flex-shrink:0;
+  }
+  .cart-item-remove:hover{color:var(--rust);}
+  .cart-item-remove svg{width:15px;height:15px;}
+  .cart-empty{
+    padding:60px 24px;text-align:center;color:var(--grey);
+  }
+  .cart-empty svg{width:44px;height:44px;color:var(--grey-light);margin-bottom:14px;}
+  .cart-empty p{font-family:'Space Grotesk';font-size:15px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+  .cart-empty span{font-size:13px;}
+  .cart-drawer-foot{
+    padding:20px 24px 24px;border-top:1px solid var(--line);
+  }
+  .cart-subtotal-row{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;
+  }
+  .cart-subtotal-row span:first-child{font-family:'Inter';font-size:13.5px;color:var(--grey);}
+  .cart-subtotal-row span:last-child{font-family:'Space Grotesk';font-size:20px;font-weight:700;color:var(--ink);}
+  .cart-checkout-btn{
+    width:100%;background:var(--green-deep);color:#fff;border:none;border-radius:999px;
+    padding:15px 0;font-family:'Inter';font-size:14px;font-weight:600;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    box-shadow:0 12px 24px -10px rgba(44,77,59,.55);
+    transition:background .2s,transform .15s;
+  }
+  .cart-checkout-btn:hover{background:var(--green);}
+  .cart-checkout-btn:active{transform:scale(.98);}
+  .cart-checkout-btn svg{width:16px;height:16px;flex-shrink:0;}
+
+  /* ===== HERO — now just the banner carousel (same style on mobile and desktop) ===== */
   .hero{
     position:relative;
     padding:192px 0 0;
-    overflow:hidden;
   }
-  .hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--paper);}
-  .hero-bg .bg-layer{
-    position:absolute;inset:0;background-size:cover;background-position:center;
-    opacity:0;transition:opacity 1.3s ease;filter:blur(1.5px) saturate(1.05);
-  }
-  .hero-bg .bg-layer.fallback{
-    background:
-      linear-gradient(135deg, #e6e8e3 25%, transparent 25%) -10px 0,
-      linear-gradient(225deg, #e6e8e3 25%, transparent 25%) -10px 0,
-      linear-gradient(315deg, #e6e8e3 25%, transparent 25%),
-      linear-gradient(45deg, #e6e8e3 25%, transparent 25%);
-    background-size:34px 34px;background-color:#f2f3f0;filter:none;
-  }
-  .hero-bg .bg-layer.active{opacity:1;}
-  .hero-bg .scrim{
-    position:absolute;inset:0;
-    background:linear-gradient(100deg, var(--paper) 0%, var(--paper) 34%, rgba(238,240,238,.82) 52%, rgba(238,240,238,.32) 78%, rgba(238,240,238,.18) 100%);
-  }
-  .hero-grid{
-    position:relative;z-index:1;
-    display:grid;grid-template-columns:1.15fr 0.85fr;gap:48px;align-items:center;
-  }
-  .eyebrow{
-    font-family:'IBM Plex Mono';font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
-    color:var(--green-deep);display:flex;align-items:center;gap:10px;margin-bottom:22px;
-  }
-  .eyebrow::before{content:'';width:22px;height:1px;background:var(--green-deep);display:inline-block;}
-  .hero h1{
-    font-size:clamp(38px,5vw,60px);
-    font-weight:700;
-    line-height:1.04;
-    margin-bottom:22px;
-  }
-  .hero h1 em{
-    font-style:normal;color:var(--green-deep);
-  }
-  .hero p.lede{
-    font-size:17px;color:var(--grey);max-width:480px;line-height:1.6;margin-bottom:34px;
-  }
-  .hero-ctas{display:flex;gap:14px;}
   .btn{
     padding:14px 26px;border-radius:2px;font-size:14px;font-weight:600;
     display:inline-flex;align-items:center;gap:8px;transition:all .15s;
@@ -261,39 +398,76 @@
   }
   .btn-ghost:hover{border-color:#fff;background:rgba(20,22,20,.4);}
 
-  /* hero visual: 3D rotating category carousel, echoing the logo's cube */
-  .hero-visual{position:relative;height:420px;}
-  .carousel-stage{
-    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-    perspective:1100px;
+  /* ===== BANNER CAROUSEL (mobile) — simple flat slide carousel with dots/arrows ===== */
+  .mbanner{
+    position:relative;margin:0 0 40px;
+    border-radius:20px;overflow:hidden;background:var(--paper-raised);
+    border:1px solid var(--line);
   }
-  .carousel-ring{
-    position:relative;width:210px;height:210px;transform-style:preserve-3d;
-    transition:transform 1.1s cubic-bezier(.65,0,.35,1);
+  .mbanner-viewport{width:100%;aspect-ratio:5/1;overflow:hidden;}
+  .mbanner-track{display:flex;height:100%;transition:transform .5s cubic-bezier(.22,1,.36,1);}
+  .mbanner-slide{flex:0 0 100%;height:100%;position:relative;cursor:pointer;}
+  .mbanner-slide img{width:100%;height:100%;object-fit:cover;}
+  .mbanner-label{
+    position:absolute;left:18px;bottom:16px;
+    background:rgba(20,22,20,.55);color:#fff;backdrop-filter:blur(6px);
+    font-family:'Space Grotesk';font-size:14px;font-weight:600;
+    padding:7px 15px;border-radius:999px;
   }
-  .carousel-face{
-    position:absolute;inset:0;width:210px;height:210px;
-    background:var(--card-bg);border:1px solid var(--line);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-    box-shadow:0 18px 40px -20px rgba(37,38,43,.35);
-    overflow:hidden;
+  .mbanner-arrow{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:36px;height:36px;border-radius:50%;border:none;
+    background:rgba(255,255,255,.92);color:var(--ink);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    box-shadow:0 4px 12px rgba(20,22,20,.2);
   }
-  .carousel-face img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
-  .carousel-face .cf-label{
-    position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--grey-light);
+  .mbanner-arrow svg{width:16px;height:16px;}
+  .mbanner-arrow.prev{left:14px;}
+  .mbanner-arrow.next{right:14px;}
+  .mbanner-dots{
+    position:absolute;left:0;right:0;bottom:12px;
+    display:flex;justify-content:center;gap:6px;
   }
-  .carousel-face .cf-label svg{width:30px;height:30px;opacity:.7;color:var(--green-deep);}
-  .carousel-face .cf-name{
-    position:absolute;left:0;right:0;bottom:0;z-index:2;
-    font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
-    background:var(--ink);color:#fff;padding:9px 0;text-align:center;
+  .mbanner-dots span{
+    width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.55);
+    transition:background .2s,transform .2s;cursor:pointer;
   }
-  .carousel-dots{
-    position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
-    display:flex;gap:7px;z-index:3;
+  .mbanner-dots span.active{background:#fff;transform:scale(1.3);}
+  .mbanner{display:none;}
+
+  /* ===== BANNER CAROUSEL — 3 slides visible with a smooth 3D coverflow slide (mobile + desktop) ===== */
+  .mbanner3d{
+    display:block;position:relative;margin:0 0 40px;padding:0 62px;
   }
-  .carousel-dots span{width:5px;height:5px;border-radius:50%;background:var(--grey-light);opacity:.5;transition:opacity .2s,background .2s;}
-  .carousel-dots span.active{background:var(--green-deep);opacity:1;}
+  .mbanner3d-viewport{
+    position:relative;width:100%;aspect-ratio:2.6/1;perspective:1500px;
+  }
+  .mbanner3d-slide{
+    position:absolute;top:0;height:100%;
+    border-radius:18px;overflow:hidden;cursor:pointer;
+    box-shadow:0 20px 45px -18px rgba(20,22,20,.35);
+    transition:left .65s cubic-bezier(.22,1,.36,1), width .65s cubic-bezier(.22,1,.36,1),
+               transform .65s cubic-bezier(.22,1,.36,1), opacity .65s ease, filter .65s ease;
+  }
+  .mbanner3d-slide img{width:100%;height:100%;object-fit:cover;display:block;}
+  .mbanner3d-slide.m3d-c{left:50%;width:46%;transform:translateX(-50%) rotateY(0) scale(1);opacity:1;z-index:3;filter:none;}
+  .mbanner3d-slide.m3d-l1{left:24%;width:27%;transform:translateX(-50%) rotateY(26deg) scale(.92);opacity:.72;z-index:2;filter:brightness(.82) saturate(.9);}
+  .mbanner3d-slide.m3d-r1{left:76%;width:27%;transform:translateX(-50%) rotateY(-26deg) scale(.92);opacity:.72;z-index:2;filter:brightness(.82) saturate(.9);}
+  .mbanner3d-slide.m3d-l2{left:8%;width:20%;transform:translateX(-50%) rotateY(35deg) scale(.78);opacity:0;z-index:0;filter:brightness(.7);pointer-events:none;}
+  .mbanner3d-slide.m3d-r2{left:92%;width:20%;transform:translateX(-50%) rotateY(-35deg) scale(.78);opacity:0;z-index:0;filter:brightness(.7);pointer-events:none;}
+  .mbanner3d-slide.m3d-c:hover{filter:brightness(1.03);}
+  .mbanner3d-arrow{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:40px;height:40px;border-radius:50%;border:1px solid var(--line);
+    background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;box-shadow:0 8px 20px -8px rgba(20,22,20,.25);z-index:5;
+    transition:border-color .2s,color .2s,transform .15s;
+  }
+  .mbanner3d-arrow:hover{border-color:var(--green-deep);color:var(--green-deep);}
+  .mbanner3d-arrow:active{transform:translateY(-50%) scale(.92);}
+  .mbanner3d-arrow svg{width:16px;height:16px;}
+  .mbanner3d-arrow.prev{left:0;}
+  .mbanner3d-arrow.next{right:0;}
 
   /* ===== TICKER ===== */
   .ticker{
@@ -375,6 +549,11 @@
     animation:viberIconTilt 1.9s ease-in-out infinite;
     filter:drop-shadow(0 1px 2px rgba(0,0,0,.18));
   }
+  .ticker-viber img{
+    width:34px;height:34px;flex-shrink:0;position:relative;z-index:1;
+    animation:viberIconTilt 1.9s ease-in-out infinite;
+    filter:drop-shadow(0 1px 2px rgba(0,0,0,.18));
+  }
   @keyframes viberIconTilt{
     0%,100%{transform:rotate(0deg) translateY(0);}
     50%{transform:rotate(-10deg) translateY(-1px);}
@@ -450,10 +629,44 @@
   }
   .card-title{font-size:14.5px;font-weight:600;margin-bottom:4px;line-height:1.3;}
   .card-sku{font-family:'IBM Plex Mono';font-size:10.5px;color:var(--grey-light);margin-bottom:12px;}
-  .card-footer{display:flex;align-items:center;justify-content:space-between;}
+  .card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .card-price{font-family:'IBM Plex Mono';font-size:15px;font-weight:500;}
   .card-price .unit{font-size:10px;color:var(--grey-light);font-family:'Inter';}
   .card{cursor:pointer;}
+
+  .card-add-btn{
+    display:flex;align-items:center;gap:6px;flex-shrink:0;
+    background:none;border:none;cursor:pointer;
+    font-family:'Inter';font-size:12.5px;font-weight:700;letter-spacing:.01em;
+    color:var(--green-deep);padding:6px 8px;margin:-6px -8px;border-radius:999px;
+    transition:background .2s,color .2s,transform .12s;
+  }
+  .card-add-btn svg{width:17px;height:17px;}
+  .card-add-btn:hover{background:rgba(63,107,82,.1);}
+  .card-add-btn:active{transform:scale(.9);}
+
+  .card-qty-stepper{
+    display:flex;align-items:center;gap:2px;flex-shrink:0;
+    background:var(--green-deep);border-radius:999px;padding:3px;
+    animation:cqsPop .25s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes cqsPop{from{transform:scale(.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .cqs-btn{
+    width:22px;height:22px;border-radius:50%;border:none;background:none;
+    color:#fff;font-size:15px;font-weight:700;cursor:pointer;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .2s,transform .12s;
+  }
+  .cqs-btn:hover{background:rgba(255,255,255,.2);}
+  .cqs-btn:active{transform:scale(.85);}
+  .cqs-val{
+    min-width:20px;text-align:center;color:#fff;font-family:'IBM Plex Mono';
+    font-size:12.5px;font-weight:600;
+  }
+  @keyframes cartBadgeBump{
+    0%{transform:scale(1);} 40%{transform:scale(1.35);} 100%{transform:scale(1);}
+  }
+  .icon-btn .badge.bump{animation:cartBadgeBump .35s ease;}
 
   /* ===== PRODUCT VIEW MODAL ===== */
   .pm-overlay{
@@ -467,13 +680,38 @@
   }
   .pm-overlay.open{opacity:1;visibility:visible;}
   .pm-box{
-    background:#fff;width:min(760px,100%);max-height:88vh;overflow-y:auto;
-    display:grid;grid-template-columns:1fr 1fr;
+    background:#fff;width:min(900px,100%);max-height:88vh;overflow-y:auto;
+    display:flex;flex-direction:column;
     box-shadow:0 30px 70px -20px rgba(20,22,20,.4);
     transform:scale(.94) translateY(14px);opacity:0;
     transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .3s;
   }
   .pm-overlay.open .pm-box{transform:scale(1) translateY(0);opacity:1;}
+  .pm-scroll-bar{
+    position:sticky;top:0;left:0;right:0;z-index:20;
+    height:0;overflow:visible;
+    display:flex;justify-content:flex-end;
+    padding:0 20px;
+    pointer-events:none;
+  }
+  .pm-scroll-close{
+    margin-top:16px;
+    display:flex;align-items:center;gap:7px;
+    background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:999px;
+    padding:9px 16px 9px 12px;font-family:'Inter';font-size:12.5px;font-weight:600;
+    cursor:pointer;box-shadow:0 10px 26px -10px rgba(20,22,20,.35);
+    opacity:1;transform:translateY(0) scale(1);
+    transition:opacity .25s ease,transform .25s cubic-bezier(.22,1,.36,1),background .2s,color .2s,border-color .2s;
+    pointer-events:auto;
+  }
+  .pm-scroll-bar.visible .pm-scroll-close{
+    opacity:1;transform:translateY(0) scale(1);pointer-events:auto;
+  }
+  .pm-scroll-close svg{width:14px;height:14px;transition:transform .3s cubic-bezier(.22,1,.36,1);}
+  .pm-scroll-close:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .pm-scroll-close:hover svg{transform:rotate(90deg);}
+  .pm-scroll-close:active{transform:scale(.95);}
+  .pm-top{display:grid;grid-template-columns:1fr 1.1fr;flex-shrink:0;}
   .pm-media{
     position:relative;aspect-ratio:1/1;
     background:
@@ -483,6 +721,7 @@
       linear-gradient(45deg, #f1f2ef 25%, transparent 25%);
     background-size:20px 20px;background-color:#fafaf9;
     display:flex;align-items:center;justify-content:center;overflow:hidden;
+    transition:opacity .22s ease,transform .22s ease;
   }
   .pm-media img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
   .pm-close{
@@ -495,20 +734,49 @@
   }
   .pm-close:hover{background:var(--paper);transform:rotate(90deg);}
   .pm-close svg{width:16px;height:16px;}
-  .pm-body{padding:36px 36px 32px;display:flex;flex-direction:column;}
+  .pm-body{padding:36px 36px 32px;display:flex;flex-direction:column;transition:opacity .22s ease,transform .22s ease;}
+  .pm-top.pm-switching .pm-media{opacity:0;transform:scale(.97);}
+  .pm-top.pm-switching .pm-body{opacity:0;transform:translateY(6px);}
   .pm-cat{
     font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.1em;text-transform:uppercase;
     color:var(--green-deep);margin-bottom:10px;
   }
   .pm-title{font-size:clamp(20px,2.4vw,26px);font-weight:600;line-height:1.25;margin-bottom:8px;}
-  .pm-sku{font-family:'IBM Plex Mono';font-size:11.5px;color:var(--grey-light);margin-bottom:20px;}
+  .pm-sku{font-family:'IBM Plex Mono';font-size:11.5px;color:var(--grey-light);margin-bottom:16px;}
   .pm-stock{
     display:inline-flex;align-self:flex-start;
     background:var(--ink);color:#fff;font-family:'IBM Plex Mono';
     font-size:10px;letter-spacing:.08em;padding:6px 11px;text-transform:uppercase;
-    margin-bottom:22px;
+    margin-bottom:18px;
   }
   .pm-stock.low{background:var(--rust);}
+  .pm-share{display:flex;align-items:center;gap:9px;margin-bottom:22px;}
+  .pm-share a{
+    display:flex;align-items:center;justify-content:center;
+    width:34px;height:34px;border-radius:50%;
+    background:var(--paper);color:var(--grey);
+    transition:transform .2s cubic-bezier(.22,1,.36,1),background .2s,color .2s,box-shadow .2s;
+  }
+  .pm-share a:hover{
+    transform:translateY(-3px);background:var(--green-deep);color:#fff;
+    box-shadow:0 10px 20px -10px rgba(44,77,59,.5);
+  }
+  .pm-share svg{width:15px;height:15px;}
+  .pm-share-img{background:#fff;}
+  .pm-share-img img{width:20px;height:20px;object-fit:contain;border-radius:6px;}
+  .pm-share-img:hover{background:var(--paper) !important;transform:translateY(-3px);}
+  .pm-copy-link{position:relative;}
+  .pm-copy-tip{
+    position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(4px);
+    background:var(--ink);color:#fff;font-family:'Inter';font-size:11px;font-weight:600;
+    padding:5px 9px;border-radius:6px;white-space:nowrap;
+    opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;
+  }
+  .pm-copy-tip::after{
+    content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    border:5px solid transparent;border-top-color:var(--ink);
+  }
+  .pm-copy-link.copied .pm-copy-tip{opacity:1;transform:translateX(-50%) translateY(0);}
   .pm-price-row{
     display:flex;align-items:baseline;gap:8px;margin-bottom:26px;
     padding-bottom:26px;border-bottom:1px solid var(--line);
@@ -534,9 +802,53 @@
   }
   .pm-add-btn:hover{background:var(--green-deep);}
   .pm-add-btn svg{width:17px;height:17px;}
+
+  /* ----- Similar Products ----- */
+  .pm-similar{
+    border-top:1px solid var(--line);
+    padding:26px 36px 32px;flex-shrink:0;
+  }
+  .pm-similar-head{
+    display:flex;align-items:baseline;gap:8px;margin-bottom:16px;
+  }
+  .pm-similar-head h4{font-family:'Space Grotesk';font-size:15px;font-weight:600;}
+  .pm-similar-head span{
+    font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--grey-light);
+  }
+  .pm-sim-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;
+  }
+  .pm-sim-card{
+    cursor:pointer;background:var(--paper-raised);
+    border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    opacity:0;transform:translateY(12px);
+    animation:pmSimIn .5s cubic-bezier(.22,1,.36,1) forwards;
+    transition:border-color .2s,transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s;
+  }
+  .pm-sim-card:hover{
+    transform:translateY(-5px);border-color:var(--green-deep);
+    box-shadow:0 16px 32px -18px rgba(20,22,20,.3);
+  }
+  @keyframes pmSimIn{to{opacity:1;transform:translateY(0);}}
+  .pm-sim-media{
+    position:relative;aspect-ratio:1/1;background:#fff;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+  }
+  .pm-sim-media img{width:100%;height:100%;object-fit:cover;}
+  .pm-sim-media .placeholder-mark{transform:scale(.55);opacity:.5;}
+  .pm-sim-media .stock-flag{transform:scale(.78);transform-origin:top left;top:8px;left:8px;}
+  .pm-sim-body{padding:10px 12px 12px;}
+  .pm-sim-name{
+    font-family:'Inter';font-size:12.5px;font-weight:600;line-height:1.3;margin-bottom:4px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  .pm-sim-price{font-family:'IBM Plex Mono';font-size:12px;color:var(--green-deep);}
+
   @media(max-width:640px){
-    .pm-box{grid-template-columns:1fr;}
+    .pm-top{grid-template-columns:1fr;}
     .pm-body{padding:26px 22px 24px;}
+    .pm-similar{padding:22px 22px 26px;}
   }
 
   .section-foot{display:flex;justify-content:center;margin-top:44px;}
@@ -565,6 +877,20 @@
   }
   .foot-brand .brand{margin-bottom:14px;}
   .foot-brand p{color:var(--grey);font-size:13.5px;line-height:1.6;max-width:260px;}
+  .foot-social{display:flex;align-items:center;gap:9px;margin-top:16px;}
+  .foot-social a{
+    display:flex;align-items:center;justify-content:center;
+    width:34px;height:34px;border-radius:50%;
+    background:#fff;border:1px solid var(--line);color:var(--grey);
+    transition:transform .2s cubic-bezier(.22,1,.36,1),background .2s,color .2s,box-shadow .2s;
+  }
+  .foot-social a:hover{
+    transform:translateY(-3px);background:var(--green-deep);color:#fff;border-color:var(--green-deep);
+    box-shadow:0 10px 20px -10px rgba(44,77,59,.5);
+  }
+  .foot-social svg{width:16px;height:16px;}
+  .foot-social-img img{width:20px;height:20px;object-fit:contain;border-radius:5px;}
+  .foot-social-img:hover{background:#fff !important;border-color:var(--ink) !important;}
   .foot-col h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;color:var(--grey);}
   .foot-col a{display:block;font-size:14px;margin-bottom:11px;color:var(--ink);}
   .foot-col a:hover{color:var(--green-deep);}
@@ -575,8 +901,6 @@
   }
 
   @media(max-width:980px){
-    .hero-grid{grid-template-columns:1fr;}
-    .hero-visual{height:280px;order:-1;}
     .grid{grid-template-columns:repeat(2,1fr);}
     .why-grid{grid-template-columns:repeat(2,1fr);gap:28px;}
     .foot-grid{grid-template-columns:1fr 1fr;}
@@ -588,23 +912,33 @@
     .navicons{gap:4px;margin-left:0;}
     .icon-btn{width:34px;height:34px;}
     .icon-btn svg{width:18px;height:18px;}
+    .icon-btn.profile.logged-in{padding:0 8px 0 3px;}
+    .profile-name{display:none;}
+    .profile-menu{right:-6px;}
     .grid{grid-template-columns:repeat(2,1fr);gap:14px;}
     .wrap{padding:0 18px;}
     .section{padding:48px 0;}
     .section-head{margin-bottom:28px;}
     .foot-grid{grid-template-columns:1fr;gap:28px;padding:48px 0 28px;}
     .foot-brand p{max-width:none;}
+    .foot-brand .brand-text{display:none;}
+    .foot-brand .brand img{height:100px;}
     .foot-bottom{flex-direction:column;gap:6px;align-items:flex-start;padding:18px 0;}
     header{padding:10px 0;}
     header.scrolled{padding:6px 0;}
     .brand img{height:64px;}
     header.scrolled .brand img{height:48px;}
     .hero{padding-top:112px;}
-    .hero-grid{gap:32px;}
-    .hero-visual{height:240px;}
-    .hero p.lede{max-width:none;}
-    .hero-ctas{flex-direction:column;gap:10px;}
-    .hero-ctas .btn{width:100%;justify-content:center;}
+    .mbanner3d{margin-bottom:18px;padding:0 34px;}
+    .mbanner3d-viewport{aspect-ratio:1.9/1;perspective:900px;}
+    .mbanner3d-slide{border-radius:14px;}
+    .mbanner3d-slide.m3d-c{width:64%;}
+    .mbanner3d-slide.m3d-l1{left:14%;width:26%;transform:translateX(-50%) rotateY(20deg) scale(.9);}
+    .mbanner3d-slide.m3d-r1{left:86%;width:26%;transform:translateX(-50%) rotateY(-20deg) scale(.9);}
+    .mbanner3d-slide.m3d-l2{left:0%;width:16%;transform:translateX(-50%) rotateY(28deg) scale(.78);}
+    .mbanner3d-slide.m3d-r2{left:100%;width:16%;transform:translateX(-50%) rotateY(-28deg) scale(.78);}
+    .mbanner3d-arrow{width:30px;height:30px;}
+    .mbanner3d-arrow svg{width:14px;height:14px;}
     .why .wrap{padding:56px 18px;}
     .why-grid{grid-template-columns:1fr;gap:24px;}
     .band{padding:60px 0;}
@@ -619,11 +953,101 @@
     .navsearch input{font-size:12.5px;}
   }
 
+  /* ===== MOBILE APP-STYLE LAYOUT (BHM-style catalogue) ===== */
+  .mobile-bottom-nav{display:none;}
+  .active-cat-chip{display:none;}
+
+  @media(max-width:640px){
+    /* --- header: collapse search to an icon, hide cart/profile (moved to bottom nav) --- */
+    header nav.wrap{position:relative;}
+    .navicons{
+      position:absolute;right:14px;top:50%;transform:translateY(-50%);
+      margin-left:0;pointer-events:none;
+    }
+    #cartTrigger,.icon-btn.profile{
+      visibility:hidden;pointer-events:none;
+    }
+    .navsearch{
+      flex:0 0 auto;width:38px;height:38px;margin:0 0 0 auto;padding:0;
+      justify-content:center;background:transparent;border:none;
+    }
+    .navsearch svg{width:19px;height:19px;color:var(--ink);}
+    .navsearch input,
+    .navsearch .search-suggestions{display:none;}
+    .navsearch.expanded{
+      position:absolute;left:14px;right:14px;top:calc(100% + 8px);
+      width:auto;height:auto;flex:none;justify-content:flex-start;
+      background:#fff;border:1px solid var(--line);border-radius:14px;
+      padding:9px 14px;gap:9px;
+      box-shadow:0 16px 40px -14px rgba(20,22,20,.28);
+    }
+    .navsearch.expanded svg{color:var(--grey-light);}
+    .navsearch.expanded input{display:block;}
+    .navsearch.expanded .search-suggestions.open{display:block;}
+
+    /* --- catalogue heading: keep just the Categories button, like the sample --- */
+    #products{padding-top:14px;}
+    #products .section-head{margin-bottom:14px;justify-content:flex-start;}
+    #products .section-head > div:first-child{display:none;}
+
+    /* --- active category chip --- */
+    .active-cat-chip{
+      align-items:center;gap:8px;width:fit-content;
+      background:var(--ink);color:#fff;border-radius:999px;padding:8px 8px 8px 16px;
+      font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+      margin-bottom:18px;
+    }
+    .active-cat-chip.show{display:flex;}
+    .active-cat-chip button{
+      width:21px;height:21px;border-radius:50%;border:none;background:rgba(255,255,255,.16);
+      color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+    }
+    .active-cat-chip button svg{width:11px;height:11px;}
+
+    /* --- bottom navigation bar --- */
+    body{padding-bottom:76px;}
+    .mobile-bottom-nav{
+      display:flex;position:fixed;left:0;right:0;bottom:0;z-index:950;
+      background:rgba(255,255,255,.98);backdrop-filter:blur(14px);
+      border-top:1px solid var(--line);
+      padding:7px 4px calc(6px + env(safe-area-inset-bottom));
+      box-shadow:0 -8px 24px -12px rgba(20,22,20,.15);
+    }
+    .mbn-item{
+      flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+      background:none;border:none;cursor:pointer;padding:5px 2px;
+      color:var(--grey);font-family:'Inter';font-size:9.5px;font-weight:600;
+    }
+    .mbn-item svg{width:21px;height:21px;transition:transform .15s;}
+    .mbn-item:active svg{transform:scale(.88);}
+    .mbn-item.active{color:var(--green-deep);}
+    .mbn-viber-item{text-decoration:none;}
+    .mbn-viber-item .mbn-viber-icon-stage{position:relative;width:22px;height:22px;}
+    .mbn-viber-item .mbn-viber-icon-stage svg,
+    .mbn-viber-item .mbn-viber-icon-stage span{
+      position:absolute;inset:0;width:22px;height:22px;
+      display:flex;align-items:center;justify-content:center;
+      backface-visibility:hidden;transition:none;
+    }
+    .mbn-viber-item .vf-icon-img-wrap img{width:100%;height:100%;object-fit:contain;}
+    .mbn-icon-wrap{position:relative;display:inline-flex;}
+    .mbn-icon-wrap .badge{
+      position:absolute;top:-4px;right:-8px;min-width:15px;height:15px;padding:0 3px;
+      border-radius:999px;background:var(--green-deep);color:#fff;font-size:9px;font-weight:700;
+      line-height:15px;text-align:center;box-shadow:0 0 0 2px #fff;
+    }
+    .mbn-icon-wrap .badge:empty{display:none;}
+    .viber-fab{display:none;}
+  }
+
   /* ===== VIBER FLOATING BUBBLE ===== */
   .viber-fab{
-    position:fixed;right:22px;bottom:24px;z-index:900;
+    position:fixed;right:22px;z-index:960;
     display:flex;align-items:center;gap:10px;
     font-family:'Inter',sans-serif;
+  }
+  @media(min-width:641px){
+    .viber-fab{bottom:24px;}
   }
   .viber-fab-text{
     background:#fff;color:var(--ink,#1a1a1a);font-size:13px;font-weight:600;
@@ -651,14 +1075,18 @@
     0%,100%{box-shadow:0 8px 22px rgba(123,95,217,.45),0 0 0 0 rgba(123,95,217,.5);}
     50%{box-shadow:0 8px 22px rgba(123,95,217,.45),0 0 0 10px rgba(123,95,217,0);}
   }
-  .viber-fab-icon-stage{position:relative;width:28px;height:28px;}
+  .viber-fab-icon-stage{position:relative;width:38px;height:38px;}
   .viber-fab-icon-stage svg,
   .viber-fab-icon-stage span{
-    position:absolute;inset:0;width:28px;height:28px;
+    position:absolute;inset:0;width:38px;height:38px;
     display:flex;align-items:center;justify-content:center;
     backface-visibility:hidden;
   }
   .vf-icon-viber{animation:vfSwapViber 3.4s ease-in-out infinite;}
+  .vf-icon-img-wrap{
+    filter:drop-shadow(0 1px 3px rgba(0,0,0,.25));
+  }
+  .vf-icon-img-wrap img{width:100%;height:100%;object-fit:contain;}
   .vf-icon-hand{
     transform-origin:70% 70%;
     animation:vfSwapHand 3.4s ease-in-out infinite;
@@ -683,9 +1111,173 @@
     animation:pulseDot 1.5s ease-in-out infinite;
   }
   @media(max-width:480px){
-    .viber-fab{right:14px;bottom:16px;}
-    .viber-fab-btn{width:52px;height:52px;}
+    .viber-fab-btn{width:48px;height:48px;}
     .viber-fab-text{font-size:12px;padding:8px 14px;}
+  }
+
+  /* ===== AUTH MODAL (login / register) ===== */
+  .auth-overlay{
+    position:fixed;inset:0;z-index:1400;
+    background:rgba(20,22,20,.55);
+    backdrop-filter:blur(4px);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+    opacity:0;visibility:hidden;
+    transition:opacity .3s ease,visibility .3s;
+  }
+  .auth-overlay.open{opacity:1;visibility:visible;}
+  .auth-box{
+    position:relative;
+    background:var(--card-bg);width:min(440px,100%);
+    max-height:calc(100vh - 40px);overflow-y:auto;
+    scrollbar-width:none;
+    border-radius:14px;
+    border-top:3px solid var(--green-deep);
+    box-shadow:0 40px 90px -24px rgba(20,22,20,.45), 0 0 0 1px rgba(20,22,20,.03);
+    transform:scale(.95) translateY(10px);opacity:0;
+    transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .3s;
+  }
+  .auth-box::-webkit-scrollbar{display:none;}
+  .auth-overlay.open .auth-box{transform:scale(1) translateY(0);opacity:1;}
+  .auth-close{
+    position:absolute;top:16px;right:16px;z-index:5;
+    display:flex;align-items:center;justify-content:center;
+    width:34px;height:34px;border-radius:50%;border:none;
+    background:var(--ink);color:#fff;cursor:pointer;
+    transition:background .2s,transform .3s cubic-bezier(.22,1,.36,1);
+  }
+  .auth-close:hover{background:var(--green-deep);transform:rotate(90deg);}
+  .auth-close svg{width:14px;height:14px;}
+
+  .auth-top{
+    position:relative;overflow:hidden;text-align:center;
+    background:linear-gradient(180deg, var(--paper) 0%, #fff 100%);
+    border-bottom:1px solid var(--line);
+    padding:36px 32px 30px;
+  }
+  .auth-watermark{
+    position:absolute;top:-46px;right:-46px;width:190px;height:190px;
+    opacity:.06;transform:rotate(-14deg);pointer-events:none;
+  }
+  .auth-brand{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:0;}
+  .auth-brand img{height:64px;width:auto;object-fit:contain;}
+  .auth-eyebrow{
+    position:relative;z-index:1;
+    font-family:'Inter';font-size:13.5px;color:var(--grey);line-height:1.4;
+    margin-top:14px;
+  }
+
+  .auth-body{padding:26px 32px 28px;}
+  .auth-sub{
+    font-family:'Inter';font-size:13.5px;color:var(--grey);line-height:1.4;
+    text-align:center;margin:0 auto 22px;
+  }
+  .auth-viewport{position:relative;overflow:hidden;transition:height .4s cubic-bezier(.22,1,.36,1);}
+  .auth-track{display:flex;align-items:flex-start;width:300%;transition:transform .4s cubic-bezier(.22,1,.36,1);}
+  .auth-box.mode-register .auth-track{transform:translateX(-33.3334%);}
+  .auth-box.mode-otp .auth-track{transform:translateX(-66.6668%);}
+  .auth-panel{width:33.3334%;flex-shrink:0;min-width:0;}
+  .auth-panel[data-panel="login"]{padding-right:2px;}
+  .auth-panel[data-panel="register"]{padding-left:2px;padding-right:2px;}
+  .auth-panel[data-panel="otp"]{padding-left:2px;}
+  .auth-otp-title{
+    font-family:'Space Grotesk';font-size:19px;font-weight:600;color:var(--ink);
+    text-align:center;margin-bottom:10px;
+  }
+  .auth-otp-sub{
+    font-family:'Inter';font-size:13.5px;color:var(--grey);line-height:1.5;
+    text-align:center;margin-bottom:22px;
+  }
+  .auth-otp-sub b{color:var(--ink);font-weight:700;}
+  .auth-otp-input{
+    width:100%;text-align:center;letter-spacing:.4em;font-size:18px;
+    padding:14px 16px;border:1px solid var(--line);border-radius:10px;
+    font-family:'IBM Plex Mono';color:var(--ink);background:var(--paper-raised);
+    outline:none;transition:border-color .2s,box-shadow .2s;
+  }
+  .auth-otp-input:focus{border-color:var(--green-deep);box-shadow:0 0 0 3px rgba(63,107,82,.14);}
+  .auth-field{margin-bottom:18px;}
+  .auth-field label{
+    display:block;font-family:'Inter';font-size:13px;font-weight:700;
+    color:var(--ink);margin-bottom:8px;
+  }
+  .auth-input-wrap{position:relative;}
+  .auth-input-wrap svg.auth-field-icon{display:none;}
+  .auth-field input{
+    width:100%;border:1.5px solid var(--line);border-radius:6px;
+    padding:15px 44px 15px 16px;font-family:'Inter';font-size:15px;color:var(--ink);
+    background:var(--paper-raised);outline:none;
+    transition:border-color .2s,background .2s,box-shadow .2s;
+  }
+  .auth-field input:focus{
+    border-color:var(--green-deep);background:#fff;
+    box-shadow:0 0 0 4px rgba(63,107,82,.12);
+  }
+  .auth-field input::placeholder{color:var(--grey-light);}
+  .auth-eye{
+    position:absolute;right:14px;top:50%;transform:translateY(-50%);
+    display:flex;align-items:center;justify-content:center;
+    background:none;border:none;cursor:pointer;color:var(--grey-light);padding:4px;
+    transition:color .2s;
+  }
+  .auth-eye:hover{color:var(--ink);}
+  .auth-eye svg{width:19px;height:19px;}
+  .auth-forgot{
+    display:flex;justify-content:flex-end;margin:-4px 0 16px;
+  }
+  .auth-forgot a{font-family:'Inter';font-size:12.5px;font-weight:600;color:var(--green-deep);}
+  .auth-forgot a:hover{text-decoration:underline;}
+  .auth-submit{
+    width:100%;border:none;border-radius:6px;
+    background:var(--green-deep);color:#fff;
+    font-family:'Inter';font-size:15.5px;font-weight:700;letter-spacing:.01em;
+    padding:15px 20px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    box-shadow:0 12px 24px -10px rgba(44,77,59,.55);
+    transition:background .2s,transform .15s,box-shadow .2s;
+  }
+  .auth-submit:hover{background:var(--green);box-shadow:0 14px 28px -10px rgba(44,77,59,.6);}
+  .auth-submit:active{transform:scale(.98);}
+  .auth-divider{
+    display:flex;align-items:center;gap:10px;margin:20px 0 16px;
+  }
+  .auth-divider::before,.auth-divider::after{
+    content:'';flex:1;height:1px;background:var(--line);
+  }
+  .auth-divider span{
+    font-family:'IBM Plex Mono';font-size:10px;text-transform:uppercase;
+    letter-spacing:.14em;color:var(--grey-light);
+  }
+  .auth-register{
+    text-align:center;font-family:'Inter';font-size:13.5px;color:var(--grey);
+  }
+  .auth-register a{font-weight:700;color:var(--green-deep);}
+  .auth-register a:hover{text-decoration:underline;}
+  .auth-privacy{
+    text-align:center;margin-top:12px;
+  }
+  .auth-privacy a{
+    font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--grey-light);
+  }
+  .auth-privacy a:hover{color:var(--grey);}
+  @media(max-width:480px){
+    .auth-box{border-radius:12px;}
+    .auth-top{padding:30px 24px 20px;}
+    .auth-body{padding:22px 24px 24px;}
+    .auth-sub{white-space:normal;}
+  }
+  @media(max-height:760px){
+    .auth-brand img{height:48px;}
+    .auth-top{padding:26px 32px 18px;}
+    .auth-sub{margin-bottom:16px;}
+  }
+  @media(max-height:620px){
+    .auth-brand img{height:38px;}
+    .auth-top{padding:20px 32px 14px;}
+    .auth-eyebrow{margin-top:10px;}
+    .auth-field{margin-bottom:12px;}
+    .auth-sub{margin-bottom:12px;}
   }
 </style>
 </head>
@@ -702,13 +1294,34 @@
       <div class="search-suggestions" id="searchSuggestions"></div>
     </label>
     <div class="navicons">
-      <button class="icon-btn" aria-label="Cart">
+      <button class="icon-btn" id="cartTrigger" aria-label="Cart">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"/></svg>
-        <span class="badge">0</span>
+        <span class="badge" id="cartBadge"></span>
       </button>
-      <button class="icon-btn profile" aria-label="Profile">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
-      </button>
+      <div class="profile-wrap" id="profileWrap">
+        <button class="icon-btn profile" id="profileTrigger" aria-label="Profile" aria-haspopup="true" aria-expanded="false">
+          <svg class="profile-guest-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+          <span class="profile-chip">
+            <span class="profile-avatar" id="profileAvatar"></span>
+            <span class="profile-name" id="profileName"></span>
+            <svg class="profile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </button>
+        <div class="profile-menu" id="profileMenu">
+          <button type="button" class="profile-menu-item" data-action="account">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+            My Account
+          </button>
+          <button type="button" class="profile-menu-item" data-action="purchase">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            My Purchase
+          </button>
+          <button type="button" class="profile-menu-item logout" data-action="logout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Logout
+          </button>
+        </div>
+      </div>
     </div>
   </nav>
 </header>
@@ -732,58 +1345,154 @@
   </aside>
 </div>
 
-<div class="pm-overlay" id="pmOverlay">
-  <div class="pm-box">
-    <div class="pm-media" id="pmMedia">
-      <button class="pm-close" id="pmClose" aria-label="Close">
+<div class="cart-overlay" id="cartOverlay">
+  <aside class="cart-drawer">
+    <div class="cart-drawer-head">
+      <div>
+        <h3>Your Cart</h3>
+        <span class="cd-count" id="cartCount">0 items</span>
+      </div>
+      <button class="cart-close" id="cartClose" aria-label="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-    <div class="pm-body">
-      <span class="pm-cat" id="pmCat"></span>
-      <h3 class="pm-title" id="pmTitle"></h3>
-      <div class="pm-sku" id="pmSku"></div>
-      <span class="pm-stock" id="pmStock"></span>
-      <div class="pm-price-row">
-        <span class="pm-price" id="pmPrice"></span>
-        <span class="pm-unit" id="pmUnit"></span>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-drawer-foot" id="cartFoot">
+      <div class="cart-subtotal-row">
+        <span>Subtotal</span>
+        <span id="cartSubtotal">MVR 0</span>
       </div>
-      <div class="pm-qty-row">
-        <div class="pm-qty">
-          <button type="button" id="pmQtyMinus" aria-label="Decrease quantity">−</button>
-          <span id="pmQtyVal">1</span>
-          <button type="button" id="pmQtyPlus" aria-label="Increase quantity">+</button>
-        </div>
-      </div>
-      <button class="pm-add-btn" id="pmAddBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"/></svg>
-        Add to Cart
+      <button class="cart-checkout-btn" id="cartCheckoutBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        Proceed to Checkout
       </button>
+    </div>
+  </aside>
+</div>
+
+<!-- ===== MOBILE BOTTOM NAV (BHM-style) ===== -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+  <button type="button" class="mbn-item active" data-action="home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+    <span>Home</span>
+  </button>
+  <a href="https://invite.viber.com/?g=YOUR_INVITE_CODE" target="_blank" rel="noopener" class="mbn-item mbn-viber-item" data-action="viber">
+    <span class="mbn-viber-icon-stage">
+      <span class="vf-icon-viber vf-icon-img-wrap">
+        <img src="img/viber.png" alt="Viber">
+      </span>
+      <svg class="vf-icon-hand" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 12V6a1.5 1.5 0 0 1 3 0v5.3"/>
+        <path d="M11 10.8V4.5a1.5 1.5 0 0 1 3 0v6.3"/>
+        <path d="M14 10.8V6.2a1.5 1.5 0 0 1 3 0v6.1"/>
+        <path d="M17 12.3a1.5 1.5 0 0 1 3 0v3.1A6.6 6.6 0 0 1 13.4 22h-1.5a6.6 6.6 0 0 1-5.9-3.6l-2-4a1.4 1.4 0 0 1 2.5-1.3L8 15.8"/>
+        <path d="M3.2 4.4 5 6.1" opacity=".85"/>
+        <path d="M2.4 9h2.5" opacity=".85"/>
+      </svg>
+    </span>
+    <span>Viber</span>
+  </a>
+  <button type="button" class="mbn-item" data-action="orders">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="M9 12h6M9 16h6"/></svg>
+    <span>Orders</span>
+  </button>
+  <button type="button" class="mbn-item" data-action="cart">
+    <span class="mbn-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"/></svg>
+      <span class="badge" id="mbnCartBadge"></span>
+    </span>
+    <span>Cart</span>
+  </button>
+  <button type="button" class="mbn-item" data-action="menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Profile</span>
+  </button>
+</nav>
+
+<div class="pm-overlay" id="pmOverlay">
+  <div class="pm-box" id="pmBox">
+    <div class="pm-scroll-bar" id="pmScrollBar">
+      <button class="pm-scroll-close" id="pmScrollClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Close
+      </button>
+    </div>
+    <div class="pm-top" id="pmTop">
+      <div class="pm-media" id="pmMedia">
+      </div>
+      <div class="pm-body">
+        <span class="pm-cat" id="pmCat"></span>
+        <h3 class="pm-title" id="pmTitle"></h3>
+        <div class="pm-sku" id="pmSku"></div>
+        <span class="pm-stock" id="pmStock"></span>
+
+        <div class="pm-share">
+          <a href="https://www.facebook.com/platinomaldives" target="_blank" rel="noopener noreferrer" class="pm-share-img" aria-label="Visit us on Facebook">
+            <img src="img/facebook.png" alt="Facebook">
+          </a>
+          <a href="#" class="pm-share-img" aria-label="Share on Viber" onclick="shareProduct(event, 'viber')">
+            <img src="img/viber.png" alt="Viber">
+          </a>
+          <a href="#" class="pm-copy-link" aria-label="Share" onclick="shareProductNative(event, this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="m8.3 10.7 7.4-4.2M8.3 13.3l7.4 4.2"/></svg>
+            <span class="pm-copy-tip">Copied!</span>
+          </a>
+        </div>
+
+
+        <div class="pm-price-row">
+          <span class="pm-price" id="pmPrice"></span>
+          <span class="pm-unit" id="pmUnit"></span>
+        </div>
+        <div class="pm-qty-row">
+          <div class="pm-qty">
+            <button type="button" id="pmQtyMinus" aria-label="Decrease quantity">−</button>
+            <span id="pmQtyVal">1</span>
+            <button type="button" id="pmQtyPlus" aria-label="Increase quantity">+</button>
+          </div>
+        </div>
+        <button class="pm-add-btn" id="pmAddBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"/></svg>
+          Add to Cart
+        </button>
+      </div>
+    </div>
+
+    <div class="pm-similar">
+      <div class="pm-similar-head">
+        <h4>Similar Products</h4>
+        <span>You might also like</span>
+      </div>
+      <div class="pm-sim-grid" id="pmSimGrid"></div>
     </div>
   </div>
 </div>
 
 <section class="hero">
-  <div class="hero-bg" id="heroBg">
-    <div class="bg-layer fallback active" id="bgLayerA"></div>
-    <div class="bg-layer" id="bgLayerB"></div>
-    <div class="scrim"></div>
-  </div>
-  <div class="wrap hero-grid">
-    <div>
-      <span class="eyebrow">Bulk Sourcing · No Middlemen</span>
-      <h1>Wholesale stock,<br><em>bought outright.</em></h1>
-      <p class="lede">Outright Trading supplies retailers and businesses with everyday goods at direct-from-source pricing — stocked, verified, and ready to move.</p>
-      <div class="hero-ctas">
-        <a href="#products" class="btn btn-primary">Browse Catalogue</a>
-        <a href="#contact" class="btn btn-ghost">Request Wholesale Access</a>
+  <div class="wrap">
+    <section class="mbanner" id="mBanner" aria-label="Featured categories">
+      <div class="mbanner-viewport">
+        <div class="mbanner-track" id="mBannerTrack"></div>
       </div>
-    </div>
-    <div class="hero-visual">
-      <div class="carousel-stage">
-        <div class="carousel-ring" id="carouselRing"></div>
+      <button type="button" class="mbanner-arrow prev" id="mBannerPrev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button type="button" class="mbanner-arrow next" id="mBannerNext" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div class="mbanner-dots" id="mBannerDots"></div>
+    </section>
+
+    <div class="mbanner3d" id="mBanner3d" aria-label="Featured categories">
+      <button type="button" class="mbanner3d-arrow prev" id="mBanner3dPrev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="mbanner3d-viewport">
+        <div class="mbanner3d-track" id="mBanner3dTrack"></div>
       </div>
-      <div class="carousel-dots" id="carouselDots"></div>
+      <button type="button" class="mbanner3d-arrow next" id="mBanner3dNext" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
     </div>
   </div>
 
@@ -795,10 +1504,7 @@
     <!-- Replace href below with your actual Viber community invite link -->
     <a href="https://invite.viber.com/?g2=AQB5Hzm0PAPYD1EIyK%2FJAWZPsy%2FNf30Uav2evOpddFJopdHli%2Bg%2B9jayAxi2gWsD" target="_blank" rel="noopener" class="ticker-viber">
       <span class="tv-icon-wrap">
-        <svg viewBox="0 0 32 32" width="24" height="24">
-          <path d="M9 2h14a7 7 0 0 1 7 7v9a7 7 0 0 1-7 7h-6.2l-5.1 4.3c-.6.5-1.5.1-1.5-.7v-3.9A7 7 0 0 1 3 18V9a7 7 0 0 1 7-7z" fill="#fff"/>
-          <path d="M20.6 18.4c-.3-.15-1.7-.85-2-.95-.26-.1-.45-.15-.65.15-.2.3-.73.94-.9 1.13-.16.19-.33.2-.62.06-.32-.16-1.3-.48-2.48-1.55-.92-.82-1.53-1.83-1.72-2.14-.18-.31-.02-.48.14-.63.14-.14.32-.36.47-.53.16-.19.2-.31.32-.52.1-.21.06-.4-.02-.55-.08-.16-.65-1.58-.9-2.16-.23-.56-.48-.48-.65-.5h-.56c-.19 0-.5.07-.76.37-.26.3-1 .96-1 2.35 0 1.38 1.02 2.72 1.16 2.91.14.19 2 3.06 4.85 4.28.68.29 1.2.47 1.62.6.68.21 1.3.19 1.79.11.55-.08 1.68-.68 1.92-1.35.24-.66.24-1.22.17-1.34-.07-.13-.26-.2-.55-.35z" fill="#6a3fc0"/>
-        </svg>
+        <img src="img/viber.png" alt="Viber">
         <span class="viber-dot"></span>
       </span>
       <span class="tv-text">Join our Viber Community</span>
@@ -818,9 +1524,28 @@
         Categories
       </button>
     </div>
-    <div class="grid" id="productGrid"></div>
-    <div class="section-foot">
-      <a href="#" class="btn btn-ghost">Load Full Catalogue</a>
+    <div class="active-cat-chip" id="activeCatChip">
+      <span id="activeCatChipLabel"></span>
+      <button type="button" id="activeCatChipClear" aria-label="Clear category filter">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="products-layout">
+      <aside class="cat-sidebar" id="catSidebar">
+        <div class="cat-sidebar-title">Categories</div>
+        <button class="cat-side-item active" data-cat="all"><span class="dot"></span>All Stock</button>
+        <button class="cat-side-item" data-cat="Beverages"><span class="dot"></span>Beverages</button>
+        <button class="cat-side-item" data-cat="Snacks"><span class="dot"></span>Snacks</button>
+        <button class="cat-side-item" data-cat="Household"><span class="dot"></span>Household</button>
+        <button class="cat-side-item" data-cat="Personal Care"><span class="dot"></span>Personal Care</button>
+        <button class="cat-side-item" data-cat="Frozen & Dairy"><span class="dot"></span>Frozen &amp; Dairy</button>
+      </aside>
+      <div class="products-main">
+        <div class="grid" id="productGrid"></div>
+        <div class="section-foot">
+          <a href="#" class="btn btn-ghost">Load Full Catalogue</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -876,6 +1601,11 @@
         </div>
       </a>
       <p>Wholesale supply for retailers and businesses. Direct sourcing, transparent stock, no surprises.</p>
+      <div class="foot-social">
+        <a href="https://www.facebook.com/platinomaldives" target="_blank" rel="noopener noreferrer" class="foot-social-img" aria-label="Follow us on Facebook">
+          <img src="img/facebook.png" alt="Facebook">
+        </a>
+      </div>
     </div>
     <div class="foot-col">
       <h4>Shop</h4>
@@ -901,6 +1631,142 @@
   </div>
 </footer>
 
+<!-- ===== AUTH MODAL (login / register) ===== -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-box" id="authBox">
+    <button class="auth-close" id="authClose" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+
+    <div class="auth-top">
+      <img class="auth-watermark" src="img/favicon.png" alt="">
+      <div class="auth-brand">
+        <img src="img/logo-mark.png" alt="Outright Trading logo">
+      </div>
+      <div class="auth-eyebrow"><span id="authEyebrowText">Login with your mobile number / email &amp; password</span></div>
+    </div>
+
+    <div class="auth-body">
+    <div class="auth-viewport" id="authViewport">
+      <div class="auth-track" id="authTrack">
+
+        <!-- LOGIN PANEL -->
+        <div class="auth-panel" data-panel="login">
+          <form id="loginForm">
+            <div class="auth-field">
+              <label for="loginId">Mobile Number / Email</label>
+              <div class="auth-input-wrap">
+                <input type="text" id="loginId" name="loginId" placeholder="Enter mobile number or email" autocomplete="username" required>
+                <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label for="loginPass">Password</label>
+              <div class="auth-input-wrap">
+                <input type="password" id="loginPass" name="loginPass" placeholder="Enter password" autocomplete="current-password" required>
+                <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+                <button type="button" class="auth-eye" data-eye-for="loginPass" aria-label="Show password">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="auth-forgot">
+              <a href="#">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="auth-submit">Login</button>
+          </form>
+
+          <div class="auth-divider"><span>Or</span></div>
+
+          <p class="auth-register">Don't have any account? <a href="#" class="auth-switch" data-switch="register">Register</a></p>
+          <div class="auth-privacy"><a href="privacy.html">Our Privacy Policy</a></div>
+        </div>
+
+        <!-- REGISTER PANEL -->
+        <div class="auth-panel" data-panel="register">
+          <form id="registerForm">
+            <div class="auth-field">
+              <label for="regName">Full Name</label>
+              <div class="auth-input-wrap">
+                <input type="text" id="regName" name="regName" placeholder="Enter your full name" autocomplete="name" required>
+                <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label for="regMobile">Mobile Number</label>
+              <div class="auth-input-wrap">
+                <input type="tel" id="regMobile" name="regMobile" placeholder="Enter mobile number" autocomplete="tel" inputmode="tel" required>
+                <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2"/><line x1="10.5" y1="18" x2="13.5" y2="18"/></svg>
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label for="regEmail">Email <span style="color:var(--grey-light);font-weight:400;">(optional)</span></label>
+              <div class="auth-input-wrap">
+                <input type="email" id="regEmail" name="regEmail" placeholder="Enter email address" autocomplete="email">
+                <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label for="regPass">Password</label>
+              <div class="auth-input-wrap">
+                <input type="password" id="regPass" name="regPass" placeholder="Create a password" autocomplete="new-password" required>
+                <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+                <button type="button" class="auth-eye" data-eye-for="regPass" aria-label="Show password">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label for="regPass2">Confirm Password</label>
+              <div class="auth-input-wrap">
+                <input type="password" id="regPass2" name="regPass2" placeholder="Re-enter password" autocomplete="new-password" required>
+                <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+                <button type="button" class="auth-eye" data-eye-for="regPass2" aria-label="Show password">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="auth-submit" style="margin-top:6px;">Create Account</button>
+          </form>
+
+          <div class="auth-divider"><span>Or</span></div>
+
+          <p class="auth-register">Already have an account? <a href="#" class="auth-switch" data-switch="login">Login</a></p>
+          <div class="auth-privacy"><a href="privacy.html">Our Privacy Policy</a></div>
+        </div>
+
+        <!-- OTP VERIFICATION PANEL -->
+        <div class="auth-panel" data-panel="otp">
+          <h3 class="auth-otp-title">Verification</h3>
+          <p class="auth-otp-sub">SMS with OTP sent to <b id="otpMobileDisplay">—</b></p>
+          <form id="otpForm">
+            <div class="auth-field">
+              <label for="otpInput">Enter OTP</label>
+              <input type="text" id="otpInput" name="otpInput" class="auth-otp-input" placeholder="− − − −" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
+            </div>
+            <button type="submit" class="auth-submit" style="margin-top:6px;">Complete Registration</button>
+          </form>
+
+          <div class="auth-divider"><span>Or</span></div>
+
+          <p class="auth-register">Already have an account? <a href="#" class="auth-switch" data-switch="login">Login</a></p>
+          <div class="auth-privacy"><a href="privacy.html">Our Privacy Policy</a></div>
+        </div>
+
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ===== NAV SHRINK ON SCROLL ===== */
 (function(){
@@ -918,6 +1784,26 @@
     }
   }, {passive:true});
   update();
+})();
+
+/* ===== MOBILE SEARCH ICON (collapses to just the magnifier, like the app) ===== */
+(function(){
+  const navsearch = document.querySelector('.navsearch');
+  const input = document.getElementById('searchInput');
+  navsearch.addEventListener('click', function(e){
+    if(window.innerWidth > 640) return;
+    if(!navsearch.classList.contains('expanded')){
+      e.preventDefault();
+      navsearch.classList.add('expanded');
+      setTimeout(() => input.focus(), 50);
+    }
+  });
+  document.addEventListener('click', function(e){
+    if(window.innerWidth > 640) return;
+    if(!navsearch.contains(e.target) && navsearch.classList.contains('expanded') && !input.value.trim()){
+      navsearch.classList.remove('expanded');
+    }
+  });
 })();
 </script>
 
@@ -1001,12 +1887,28 @@ function renderProducts(){
           <div class="card-sku">SKU ${p.sku}</div>
           <div class="card-footer">
             <div class="card-price">${p.price}<span class="unit"> ${p.unit}</span></div>
+            <div class="card-action" data-sku="${p.sku}">${cardActionHTML(getQtyForSku(p.sku), p.name)}</div>
           </div>
         </div>
       `;
       grid.appendChild(card);
 
       card.addEventListener('click', () => openProductModal(p));
+
+      const actionEl = card.querySelector('.card-action');
+      actionEl.addEventListener('click', e => {
+        e.stopPropagation();
+        const btn = e.target.closest('button');
+        if(!btn) return;
+
+        if(btn.classList.contains('card-add-btn')){
+          addToCart(p, 1);
+        } else if(btn.dataset.action === 'inc'){
+          changeCartQty(p.sku, 1);
+        } else if(btn.dataset.action === 'dec'){
+          changeCartQty(p.sku, -1);
+        }
+      });
     });
 
     grid.classList.remove('grid-switching');
@@ -1018,8 +1920,20 @@ function selectCategory(cat){
   currentCategory = cat;
   document.querySelectorAll('.cat-item').forEach(i => i.classList.toggle('active', i.dataset.cat === cat));
   document.querySelectorAll('.cat-drawer-item').forEach(i => i.classList.toggle('active', i.dataset.cat === cat));
+  document.querySelectorAll('.cat-side-item').forEach(i => i.classList.toggle('active', i.dataset.cat === cat));
+
+  const chip = document.getElementById('activeCatChip');
+  const chipLabel = document.getElementById('activeCatChipLabel');
+  if(cat === 'all'){
+    chip.classList.remove('show');
+  } else {
+    chipLabel.textContent = cat;
+    chip.classList.add('show');
+  }
+
   renderProducts();
 }
+document.getElementById('activeCatChipClear').addEventListener('click', () => selectCategory('all'));
 
 document.querySelectorAll('.cat-item').forEach(item => {
   item.addEventListener('click', () => selectCategory(item.dataset.cat));
@@ -1135,15 +2049,16 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeCatDrawe
 document.querySelectorAll('.cat-drawer-item').forEach(item => {
   item.addEventListener('click', () => {
     selectCategory(item.dataset.cat);
-    closeCatDrawer();
-    window.setTimeout(() => {
-      document.getElementById('productGrid').scrollIntoView({ behavior:'smooth', block:'start' });
-    }, 350);
+    document.getElementById('productGrid').scrollIntoView({ behavior:'smooth', block:'start' });
   });
 });
 
+document.querySelectorAll('.cat-side-item').forEach(item => {
+  item.addEventListener('click', () => selectCategory(item.dataset.cat));
+});
+
 /* =========================================================
-   HERO CATEGORY CAROUSEL — 3D rotating slideshow.
+   HERO BANNER CAROUSEL — simple slide carousel with dots/arrows.
    To use a real photo per category: set "img" below to a path,
    e.g. "assets/categories/beverages.jpg". Leave "" for placeholder.
 ========================================================= */
@@ -1154,54 +2069,97 @@ const CATEGORY_VISUALS = [
   { name:"Personal Care", img:"img/homepage/1personalcare.jpg" },
   { name:"Frozen & Dairy", img:"img/homepage/1frozen&dairy.webp" },
 ];
-const ring = document.getElementById('carouselRing');
-const dotsWrap = document.getElementById('carouselDots');
-const faceCount = CATEGORY_VISUALS.length;
-const faceAngle = 360 / faceCount;
-const radius = Math.round(105 / Math.tan(Math.PI / faceCount));
 
+const mBannerTrack = document.getElementById('mBannerTrack');
+const mBannerDots = document.getElementById('mBannerDots');
 CATEGORY_VISUALS.forEach((c, i) => {
-  const face = document.createElement('div');
-  face.className = 'carousel-face';
-  face.style.transform = `rotateY(${i * faceAngle}deg) translateZ(${radius}px)`;
-  face.innerHTML = `
-    ${c.img
-      ? `<img src="${c.img}" alt="${c.name}">`
-      : `<div class="cf-label">${placeholderIcon}</div>`
-    }
-    <div class="cf-name">${c.name}</div>
-  `;
-  ring.appendChild(face);
+  const slide = document.createElement('div');
+  slide.className = 'mbanner-slide';
+  slide.innerHTML = c.img
+    ? `<img src="${c.img}" alt="${c.name}"><span class="mbanner-label">${c.name}</span>`
+    : `<div class="placeholder-mark" style="height:100%;display:flex;align-items:center;justify-content:center;">${placeholderIcon}</div>`;
+  slide.addEventListener('click', () => {
+    selectCategory(c.name);
+    document.getElementById('products').scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+  mBannerTrack.appendChild(slide);
 
   const dot = document.createElement('span');
-  if (i === 0) dot.classList.add('active');
-  dotsWrap.appendChild(dot);
+  if(i === 0) dot.classList.add('active');
+  dot.addEventListener('click', () => { goToBannerSlide(i); restartMBannerTimer(); });
+  mBannerDots.appendChild(dot);
 });
 
-/* Hero background — crossfades to match whatever the carousel is showing */
-const bgLayerA = document.getElementById('bgLayerA');
-const bgLayerB = document.getElementById('bgLayerB');
-let bgShowingA = true;
-function updateHeroBg(index){
-  const cat = CATEGORY_VISUALS[index];
-  const incoming = bgShowingA ? bgLayerB : bgLayerA;
-  const outgoing = bgShowingA ? bgLayerA : bgLayerB;
-  incoming.classList.toggle('fallback', !cat.img);
-  incoming.style.backgroundImage = cat.img ? `url('${cat.img}')` : 'none';
-  incoming.classList.add('active');
-  outgoing.classList.remove('active');
-  bgShowingA = !bgShowingA;
+let mBannerIndex = 0;
+function goToBannerSlide(i){
+  mBannerIndex = (i + CATEGORY_VISUALS.length) % CATEGORY_VISUALS.length;
+  mBannerTrack.style.transform = `translateX(-${mBannerIndex * 100}%)`;
+  mBannerDots.querySelectorAll('span').forEach((d, idx) => d.classList.toggle('active', idx === mBannerIndex));
 }
+let mBannerTimer = setInterval(() => goToBannerSlide(mBannerIndex + 1), 3800);
+function restartMBannerTimer(){
+  clearInterval(mBannerTimer);
+  mBannerTimer = setInterval(() => goToBannerSlide(mBannerIndex + 1), 3800);
+}
+document.getElementById('mBannerPrev').addEventListener('click', () => { goToBannerSlide(mBannerIndex - 1); restartMBannerTimer(); });
+document.getElementById('mBannerNext').addEventListener('click', () => { goToBannerSlide(mBannerIndex + 1); restartMBannerTimer(); });
 
-let activeFace = 0;
-updateHeroBg(0); // show the first slide's photo immediately, don't wait for the first rotation
-function rotateCarousel(){
-  activeFace = (activeFace + 1) % faceCount;
-  ring.style.transform = `rotateY(${-activeFace * faceAngle}deg)`;
-  [...dotsWrap.children].forEach((d, i) => d.classList.toggle('active', i === activeFace));
-  updateHeroBg(activeFace);
+/* ===== DESKTOP BANNER — 3 slides visible at once, smooth 3D coverflow slide ===== */
+const mBanner3dTrack = document.getElementById('mBanner3dTrack');
+const M3D_POS_CLASSES = ['m3d-l2','m3d-l1','m3d-c','m3d-r1','m3d-r2'];
+let m3dIndex = 0;
+
+function buildMBanner3dSlides(){
+  mBanner3dTrack.innerHTML = CATEGORY_VISUALS.map((c, i) => `
+    <div class="mbanner3d-slide" data-idx="${i}" data-name="${c.name}">
+      ${c.img
+        ? `<img src="${c.img}" alt="${c.name}">`
+        : `<div class="placeholder-mark" style="height:100%;display:flex;align-items:center;justify-content:center;">${placeholderIcon}</div>`
+      }
+    </div>
+  `).join('');
+  mBanner3dTrack.querySelectorAll('.mbanner3d-slide').forEach(el => {
+    el.addEventListener('click', () => {
+      const n = CATEGORY_VISUALS.length;
+      const idx = parseInt(el.dataset.idx, 10);
+      let diff = (idx - m3dIndex) % n;
+      if(diff > n / 2) diff -= n;
+      if(diff < -n / 2) diff += n;
+      if(diff === 0){
+        selectCategory(el.dataset.name);
+        document.getElementById('products').scrollIntoView({ behavior:'smooth', block:'start' });
+      } else {
+        goM3d(diff > 0 ? 1 : -1);
+        restartM3dTimer();
+      }
+    });
+  });
 }
-setInterval(rotateCarousel, 3200);
+function updateMBanner3dPositions(){
+  const n = CATEGORY_VISUALS.length;
+  mBanner3dTrack.querySelectorAll('.mbanner3d-slide').forEach(el => {
+    const idx = parseInt(el.dataset.idx, 10);
+    let diff = (idx - m3dIndex) % n;
+    if(diff > n / 2) diff -= n;
+    if(diff < -n / 2) diff += n;
+    diff = Math.max(-2, Math.min(2, diff));
+    el.classList.remove(...M3D_POS_CLASSES);
+    el.classList.add(M3D_POS_CLASSES[diff + 2]);
+  });
+}
+function goM3d(step){
+  m3dIndex = (m3dIndex + step + CATEGORY_VISUALS.length) % CATEGORY_VISUALS.length;
+  updateMBanner3dPositions();
+}
+buildMBanner3dSlides();
+updateMBanner3dPositions();
+let m3dTimer = setInterval(() => goM3d(1), 3800);
+function restartM3dTimer(){
+  clearInterval(m3dTimer);
+  m3dTimer = setInterval(() => goM3d(1), 3800);
+}
+document.getElementById('mBanner3dPrev').addEventListener('click', () => { goM3d(-1); restartM3dTimer(); });
+document.getElementById('mBanner3dNext').addEventListener('click', () => { goM3d(1); restartM3dTimer(); });
 
 /* Ticker strip — New Arrivals, pulled straight from the product catalogue above */
 const TICKER_ICONS = {
@@ -1235,8 +2193,11 @@ buildTicker();
 
 /* ===== PRODUCT VIEW MODAL ===== */
 const pmOverlay = document.getElementById('pmOverlay');
+const pmBox = document.getElementById('pmBox');
+const pmScrollBar = document.getElementById('pmScrollBar');
+const pmScrollClose = document.getElementById('pmScrollClose');
+const pmTop = document.getElementById('pmTop');
 const pmMedia = document.getElementById('pmMedia');
-const pmClose = document.getElementById('pmClose');
 const pmCat = document.getElementById('pmCat');
 const pmTitle = document.getElementById('pmTitle');
 const pmSku = document.getElementById('pmSku');
@@ -1247,10 +2208,45 @@ const pmQtyVal = document.getElementById('pmQtyVal');
 const pmQtyMinus = document.getElementById('pmQtyMinus');
 const pmQtyPlus = document.getElementById('pmQtyPlus');
 const pmAddBtn = document.getElementById('pmAddBtn');
+const pmSimGrid = document.getElementById('pmSimGrid');
 
 let pmQty = 1;
+let pmCurrent = null;
 
-function openProductModal(p){
+function getSimilarProducts(p){
+  let items = PRODUCTS.filter(x => x.cat === p.cat && x.sku !== p.sku);
+  if(items.length < 4){
+    const fillers = PRODUCTS.filter(x => x.cat !== p.cat && x.sku !== p.sku);
+    items = items.concat(fillers);
+  }
+  return items.slice(0, 8);
+}
+
+function renderSimilar(p){
+  pmSimGrid.innerHTML = '';
+  getSimilarProducts(p).forEach((sp, idx) => {
+    const card = document.createElement('div');
+    card.className = 'pm-sim-card';
+    card.style.animationDelay = Math.min(idx * 55, 330) + 'ms';
+    card.innerHTML = `
+      <div class="pm-sim-media">
+        ${sp.stock === 'low' ? '<span class="stock-flag low">Low Stock</span>' : ''}
+        ${sp.img
+          ? `<img src="${sp.img}" alt="${sp.name}">`
+          : `<div class="placeholder-mark">${placeholderIcon}</div>`
+        }
+      </div>
+      <div class="pm-sim-body">
+        <div class="pm-sim-name">${sp.name}</div>
+        <div class="pm-sim-price">${sp.price}</div>
+      </div>
+    `;
+    card.addEventListener('click', () => loadProduct(sp, { animate: true }));
+    pmSimGrid.appendChild(card);
+  });
+}
+
+function fillProductFields(p){
   pmCat.textContent = p.cat;
   pmTitle.textContent = p.name;
   pmSku.textContent = `SKU ${p.sku}`;
@@ -1276,8 +2272,95 @@ function openProductModal(p){
   pmQty = 1;
   pmQtyVal.textContent = pmQty;
 
+  renderSimilar(p);
+  pmCurrent = p;
+}
+
+function getProductShareUrl(){
+  const base = window.location.href.split('#')[0].split('?')[0];
+  if(pmCurrent && pmCurrent.sku){
+    return `${base}?product=${encodeURIComponent(pmCurrent.sku)}`;
+  }
+  return window.location.href;
+}
+
+function shareProduct(evt, platform){
+  evt.preventDefault();
+  const url = getProductShareUrl();
+  const title = pmCurrent && pmCurrent.name ? pmCurrent.name : 'Check this out on Outright Trading';
+  let shareUrl = '';
+
+  if(platform === 'facebook'){
+    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+  } else if(platform === 'viber'){
+    shareUrl = `viber://forward?text=${encodeURIComponent(`${title} ${url}`)}`;
+  }
+
+  if(!shareUrl) return;
+  window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=520');
+}
+
+function shareProductNative(evt, el){
+  evt.preventDefault();
+  const url = getProductShareUrl();
+  const title = pmCurrent && pmCurrent.name ? pmCurrent.name : 'Outright Trading';
+
+  const showCopied = () => {
+    el.classList.add('copied');
+    window.clearTimeout(el._copyTimer);
+    el._copyTimer = window.setTimeout(() => el.classList.remove('copied'), 1600);
+  };
+
+  if(navigator.share){
+    navigator.share({ title, url }).catch(() => {
+      // user cancelled or share failed silently — no fallback needed
+    });
+    return;
+  }
+
+  // Devices/browsers without native share: copy the link so it's ready to paste anywhere
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(showCopied).catch(() => {
+      fallbackCopy(url);
+      showCopied();
+    });
+  } else {
+    fallbackCopy(url);
+    showCopied();
+  }
+}
+
+function fallbackCopy(text){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+}
+
+function loadProduct(p, { animate = false } = {}){
+  if(!animate){
+    fillProductFields(p);
+    return;
+  }
+  pmTop.classList.add('pm-switching');
+  window.setTimeout(() => {
+    fillProductFields(p);
+    pmTop.classList.remove('pm-switching');
+    // scroll the modal body back to the top so the new product is fully visible
+    pmOverlay.querySelector('.pm-box').scrollTo({ top: 0, behavior: 'smooth' });
+  }, 220);
+}
+
+function openProductModal(p){
+  loadProduct(p, { animate: false });
   pmOverlay.classList.add('open');
   document.body.style.overflow = 'hidden';
+  pmBox.scrollTop = 0;
+  pmScrollBar.classList.remove('visible');
 }
 
 function closeProductModal(){
@@ -1285,8 +2368,14 @@ function closeProductModal(){
   document.body.style.overflow = '';
 }
 
-pmClose.addEventListener('click', closeProductModal);
+pmScrollClose.addEventListener('click', closeProductModal);
 pmOverlay.addEventListener('click', e => { if(e.target === pmOverlay) closeProductModal(); });
+
+/* Show the sticky "Close" bar once the visitor scrolls down past the
+   product image/details, so there's always a way to close the modal. */
+pmBox.addEventListener('scroll', () => {
+  pmScrollBar.classList.toggle('visible', pmBox.scrollTop > 80);
+});
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeProductModal(); });
 
 pmQtyMinus.addEventListener('click', () => {
@@ -1296,25 +2385,480 @@ pmQtyPlus.addEventListener('click', () => {
   pmQty++; pmQtyVal.textContent = pmQty;
 });
 pmAddBtn.addEventListener('click', () => {
+  if(pmCurrent){
+    addToCart(pmCurrent, pmQty);
+  }
   pmAddBtn.textContent = 'Added ✓';
   setTimeout(() => {
     pmAddBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"/></svg> Add to Cart`;
   }, 1400);
 });
+
+/* ===== AUTH MODAL (login / register) ===== */
+const authOverlay = document.getElementById('authOverlay');
+const profileWrap = document.getElementById('profileWrap');
+const profileTrigger = document.getElementById('profileTrigger');
+const profileMenu = document.getElementById('profileMenu');
+const profileAvatar = document.getElementById('profileAvatar');
+const profileName = document.getElementById('profileName');
+const authClose = document.getElementById('authClose');
+const authBox = document.getElementById('authBox');
+const authViewport = document.getElementById('authViewport');
+const loginPanel = document.querySelector('.auth-panel[data-panel="login"]');
+const registerPanel = document.querySelector('.auth-panel[data-panel="register"]');
+const otpPanel = document.querySelector('.auth-panel[data-panel="otp"]');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const otpForm = document.getElementById('otpForm');
+const otpMobileDisplay = document.getElementById('otpMobileDisplay');
+const authEyebrowText = document.getElementById('authEyebrowText');
+const AUTH_EYEBROW_COPY = {
+  login: 'Login with your mobile number / email &amp; password',
+  register: 'Create an account to start ordering',
+  otp: 'Almost there — verify your mobile number'
+};
+const AUTH_PANELS = { login: loginPanel, register: registerPanel, otp: otpPanel };
+
+function setAuthHeight(panel){
+  authViewport.style.height = panel.offsetHeight + 'px';
+}
+
+function switchAuthPanel(mode){
+  const targetPanel = AUTH_PANELS[mode] || loginPanel;
+  authEyebrowText.innerHTML = AUTH_EYEBROW_COPY[mode] || AUTH_EYEBROW_COPY.login;
+  // lock current height so the morph animates from a real px value
+  authViewport.style.height = authViewport.offsetHeight + 'px';
+  requestAnimationFrame(() => {
+    authBox.classList.remove('mode-register', 'mode-otp');
+    if(mode === 'register') authBox.classList.add('mode-register');
+    if(mode === 'otp') authBox.classList.add('mode-otp');
+    setAuthHeight(targetPanel);
+  });
+}
+
+function openAuthModal(reasonText){
+  authOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  authBox.classList.remove('mode-register', 'mode-otp');
+  authEyebrowText.innerHTML = reasonText || AUTH_EYEBROW_COPY.login;
+  // set height instantly (no transition) so it opens at the right size
+  authViewport.style.transition = 'none';
+  setAuthHeight(loginPanel);
+  requestAnimationFrame(() => { authViewport.style.transition = ''; });
+}
+function closeAuthModal(){
+  authOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* Guest visitors tapping the profile icon go straight to the login/register
+   modal. Logged-in visitors instead get a dropdown (My Account / My Purchase
+   / Logout) anchored to the avatar chip. */
+function openProfileMenu(){
+  profileMenu.classList.add('open');
+  profileTrigger.setAttribute('aria-expanded', 'true');
+}
+function closeProfileMenu(){
+  profileMenu.classList.remove('open');
+  profileTrigger.setAttribute('aria-expanded', 'false');
+}
+function toggleProfileMenu(){
+  if(profileMenu.classList.contains('open')) closeProfileMenu();
+  else openProfileMenu();
+}
+
+profileTrigger.addEventListener('click', () => {
+  if(isLoggedIn()){
+    toggleProfileMenu();
+    return;
+  }
+  pendingAction = null;
+  openAuthModal();
+});
+
+document.addEventListener('click', e => {
+  if(!profileWrap.contains(e.target)) closeProfileMenu();
+});
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeProfileMenu(); });
+
+profileMenu.addEventListener('click', e => {
+  const item = e.target.closest('.profile-menu-item');
+  if(!item) return;
+  const action = item.dataset.action;
+  closeProfileMenu();
+  if(action === 'logout'){
+    logout();
+  } else if(action === 'account'){
+    // TODO: wire this up to a real account page/section once one exists.
+    alert('My Account is not connected yet.');
+  } else if(action === 'purchase'){
+    // TODO: wire this up to real order history once the backend is ready.
+    alert('My Purchase history is not connected yet.');
+  }
+});
+
+/* Reflects the current session (avatar initial + name, or the guest icon)
+   in the profile button. Call after login, logout, and on page load. */
+function updateProfileUI(){
+  const loggedIn = isLoggedIn();
+  profileTrigger.classList.toggle('logged-in', loggedIn);
+  profileTrigger.setAttribute('aria-expanded', 'false');
+  profileMenu.classList.remove('open');
+  if(loggedIn){
+    const user = getAuthUser() || 'Customer';
+    profileName.textContent = user;
+    profileAvatar.textContent = user.trim().charAt(0) || 'U';
+  }
+}
+authClose.addEventListener('click', closeAuthModal);
+authOverlay.addEventListener('click', e => { if(e.target === authOverlay) closeAuthModal(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && authOverlay.classList.contains('open')) closeAuthModal(); });
+
+document.querySelectorAll('.auth-switch').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    switchAuthPanel(link.dataset.switch);
+  });
+});
+
+// per-field password show/hide (works for both login + register panels)
+document.querySelectorAll('.auth-eye').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const input = document.getElementById(btn.dataset.eyeFor);
+    const isHidden = input.type === 'password';
+    input.type = isHidden ? 'text' : 'password';
+    btn.innerHTML = isHidden
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a20.3 20.3 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a20.3 20.3 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  });
+});
+
+loginForm.addEventListener('submit', e => {
+  e.preventDefault();
+  // TODO: wire this up to your actual auth/login backend (Firebase, etc.)
+  console.log('Login attempt:', loginForm.loginId.value);
+  completeAuth(loginForm.loginId.value);
+});
+
+let pendingRegisterName = '';
+
+registerForm.addEventListener('submit', e => {
+  e.preventDefault();
+  if(registerForm.regPass.value !== registerForm.regPass2.value){
+    registerForm.regPass2.focus();
+    return;
+  }
+  // TODO: send the actual OTP via your SMS provider here.
+  console.log('Register attempt:', registerForm.regName.value, registerForm.regMobile.value, registerForm.regEmail.value);
+  pendingRegisterName = registerForm.regName.value || registerForm.regMobile.value;
+  otpMobileDisplay.textContent = registerForm.regMobile.value || '—';
+  otpForm.reset();
+  switchAuthPanel('otp');
+});
+
+otpForm.addEventListener('submit', e => {
+  e.preventDefault();
+  // TODO: verify the OTP against your SMS provider here before completing registration.
+  console.log('OTP submitted:', otpForm.otpInput.value);
+  completeAuth(pendingRegisterName);
+});
+
+/* Called once a login attempt or OTP verification "succeeds". Since there's
+   no backend wired up yet, this just marks the visitor as logged in
+   locally. Swap the body of this function out once real auth is connected. */
+function completeAuth(userLabel){
+  setLoggedIn(userLabel);
+  updateProfileUI();
+  closeAuthModal();
+  loginForm.reset();
+  registerForm.reset();
+  otpForm.reset();
+  if(pendingAction === 'checkout'){
+    openCartDrawer();
+    // TODO: wire this up to your actual checkout/order flow.
+    alert('Checkout is not connected yet — this is where the order would be placed.');
+  }
+  pendingAction = null;
+
+}
+
+/* =========================================================
+   SESSION STATE (simulated) — swap for real auth/session
+   checks (Firebase, cookies, etc.) once the backend is wired up.
+========================================================= */
+function isLoggedIn(){
+  return localStorage.getItem('outrightLoggedIn') === '1';
+}
+function getAuthUser(){
+  return localStorage.getItem('outrightUser') || '';
+}
+function setLoggedIn(userLabel){
+  localStorage.setItem('outrightLoggedIn', '1');
+  if(userLabel) localStorage.setItem('outrightUser', userLabel);
+}
+function logout(){
+  localStorage.removeItem('outrightLoggedIn');
+  localStorage.removeItem('outrightUser');
+  updateProfileUI();
+}
+
+/* =========================================================
+   CART — items persist in localStorage so a refresh (or a
+   detour through the login/register screen) doesn't lose them.
+   Flow: adding to cart never requires login. Opening the cart
+   drawer does — if the visitor isn't logged in, the auth modal
+   opens first and the cart opens automatically right after.
+========================================================= */
+let cart = JSON.parse(localStorage.getItem('outrightCartItems') || '[]');
+let pendingAction = null;
+
+function saveCart(sku){
+  localStorage.setItem('outrightCartItems', JSON.stringify(cart));
+  updateCartBadge();
+  bumpCartBadge();
+  syncCardActions(sku);
+}
+
+function getQtyForSku(sku){
+  const item = cart.find(i => i.sku === sku);
+  return item ? item.qty : 0;
+}
+
+/* Renders either the "Add" button or the green qty stepper for a product
+   card, depending on how many of that item are currently in the cart. */
+function cardActionHTML(qty, name){
+  if(qty > 0){
+    return `
+      <div class="card-qty-stepper">
+        <button type="button" class="cqs-btn" data-action="dec" aria-label="Decrease quantity">−</button>
+        <span class="cqs-val">${qty}</span>
+        <button type="button" class="cqs-btn" data-action="inc" aria-label="Increase quantity">+</button>
+      </div>
+    `;
+  }
+  return `
+    <button class="card-add-btn" type="button" aria-label="Add ${escapeHTML(name || '')} to cart">
+      Add
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"/><path d="M12 8v4M10 10h4"/></svg>
+    </button>
+  `;
+}
+
+/* Keeps visible product cards in sync with the cart. When a sku is given
+   (the normal case — a card's own +/-/Add was clicked, or its qty changed
+   from the cart drawer), only THAT product's card(s) are touched so other
+   cards on the page don't replay the pop-in animation. Called with no sku
+   only for a full resync (not needed in normal use). */
+function syncCardActions(sku){
+  const selector = sku ? `.card-action[data-sku="${CSS.escape(sku)}"]` : '.card-action[data-sku]';
+  document.querySelectorAll(selector).forEach(el => {
+    const elSku = el.dataset.sku;
+    const product = PRODUCTS.find(p => p.sku === elSku);
+    el.innerHTML = cardActionHTML(getQtyForSku(elSku), product ? product.name : '');
+  });
+}
+
+function bumpCartBadge(){
+  const badge = document.getElementById('cartBadge');
+  if(badge){ badge.classList.remove('bump'); void badge.offsetWidth; badge.classList.add('bump'); }
+}
+
+function cartTotalQty(){
+  return cart.reduce((sum, item) => sum + item.qty, 0);
+}
+
+function parsePrice(priceStr){
+  const n = parseFloat(String(priceStr).replace(/[^0-9.]/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+
+function addToCart(product, qty){
+  const existing = cart.find(item => item.sku === product.sku);
+  if(existing){
+    existing.qty += qty;
+  } else {
+    cart.push({
+      sku: product.sku,
+      name: product.name,
+      price: product.price,
+      unit: product.unit,
+      img: product.img,
+      qty: qty
+    });
+  }
+  saveCart(product.sku);
+  renderCartDrawer();
+}
+
+function updateCartBadge(){
+  const badge = document.getElementById('cartBadge');
+  const mbnBadge = document.getElementById('mbnCartBadge');
+  const qty = cartTotalQty();
+  if(badge) badge.textContent = qty > 0 ? qty : '';
+  if(mbnBadge) mbnBadge.textContent = qty > 0 ? qty : '';
+}
+
+function changeCartQty(sku, delta){
+  const item = cart.find(i => i.sku === sku);
+  if(!item) return;
+  item.qty += delta;
+  if(item.qty <= 0){
+    cart = cart.filter(i => i.sku !== sku);
+  }
+  saveCart(sku);
+  renderCartDrawer();
+}
+
+function removeFromCart(sku){
+  cart = cart.filter(i => i.sku !== sku);
+  saveCart(sku);
+  renderCartDrawer();
+}
+
+function renderCartDrawer(){
+  const cartItemsEl = document.getElementById('cartItems');
+  const cartCountEl = document.getElementById('cartCount');
+  const cartSubtotalEl = document.getElementById('cartSubtotal');
+  const cartFootEl = document.getElementById('cartFoot');
+
+  const totalQty = cartTotalQty();
+  cartCountEl.textContent = `${totalQty} item${totalQty === 1 ? '' : 's'}`;
+
+  if(cart.length === 0){
+    cartItemsEl.innerHTML = `
+      <div class="cart-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"/></svg>
+        <p>Your cart is empty</p>
+        <span>Browse the catalogue and add some stock.</span>
+      </div>
+    `;
+    cartFootEl.style.display = 'none';
+    return;
+  }
+
+  cartFootEl.style.display = '';
+  let subtotal = 0;
+  cartItemsEl.innerHTML = cart.map(item => {
+    const lineTotal = parsePrice(item.price) * item.qty;
+    subtotal += lineTotal;
+    return `
+      <div class="cart-item" data-sku="${item.sku}">
+        <div class="cart-item-media">
+          ${item.img ? `<img src="${item.img}" alt="${escapeHTML(item.name)}">` : placeholderIcon}
+        </div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${escapeHTML(item.name)}</div>
+          <div class="cart-item-sku">SKU ${escapeHTML(item.sku)}</div>
+          <div class="cart-item-row">
+            <div class="cart-item-qty">
+              <button type="button" data-action="dec" aria-label="Decrease quantity">−</button>
+              <span>${item.qty}</span>
+              <button type="button" data-action="inc" aria-label="Increase quantity">+</button>
+            </div>
+            <span class="cart-item-price">MVR ${lineTotal.toFixed(0)}</span>
+          </div>
+        </div>
+        <button class="cart-item-remove" data-action="remove" aria-label="Remove item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    `;
+  }).join('');
+  cartSubtotalEl.textContent = `MVR ${subtotal.toFixed(0)}`;
+}
+
+document.getElementById('cartItems').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-action]');
+  if(!btn) return;
+  const sku = btn.closest('.cart-item').dataset.sku;
+  if(btn.dataset.action === 'inc') changeCartQty(sku, 1);
+  if(btn.dataset.action === 'dec') changeCartQty(sku, -1);
+  if(btn.dataset.action === 'remove') removeFromCart(sku);
+});
+
+const cartOverlay = document.getElementById('cartOverlay');
+const cartTrigger = document.getElementById('cartTrigger');
+const cartClose = document.getElementById('cartClose');
+const cartCheckoutBtn = document.getElementById('cartCheckoutBtn');
+
+function openCartDrawer(){
+  renderCartDrawer();
+  cartOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCartDrawer(){
+  cartOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+cartTrigger.addEventListener('click', () => {
+  openCartDrawer();
+});
+cartClose.addEventListener('click', closeCartDrawer);
+cartOverlay.addEventListener('click', e => { if(e.target === cartOverlay) closeCartDrawer(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && cartOverlay.classList.contains('open')) closeCartDrawer(); });
+
+cartCheckoutBtn.addEventListener('click', () => {
+  if(!isLoggedIn()){
+    // Cart is viewable by anyone, but placing an order requires an
+    // account. Send them to login/register first, then resume straight
+    // into checkout once they're signed in.
+    pendingAction = 'checkout';
+    closeCartDrawer();
+    openAuthModal('Please login or register to checkout');
+    return;
+  }
+  // TODO: wire this up to your actual checkout/order flow.
+  alert('Checkout is not connected yet — this is where the order would be placed.');
+});
+
+updateCartBadge();
+updateProfileUI();
+
+/* ===== MOBILE BOTTOM NAV — reuses the same functions as the desktop UI ===== */
+document.querySelectorAll('.mbn-item').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const action = btn.dataset.action;
+    if(action === 'home' || action === 'offers' || action === 'orders'){
+      document.querySelectorAll('.mbn-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    switch(action){
+      case 'home':
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        break;
+      case 'offers':
+        document.getElementById('contact').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        break;
+      case 'orders':
+        if(isLoggedIn()){
+          alert('My Purchase history is not connected yet.');
+        } else {
+          pendingAction = null;
+          openAuthModal('Please login to view your orders');
+        }
+        break;
+      case 'cart':
+        openCartDrawer();
+        break;
+      case 'menu':
+        document.getElementById('profileTrigger').click();
+        break;
+    }
+  });
+});
 </script>
 
-<!-- ===== VIBER FLOATING BUBBLE ===== -->
+
 <!-- Replace href below with your actual Viber community/chat link -->
 <a href="https://invite.viber.com/?g=YOUR_INVITE_CODE" target="_blank" rel="noopener" class="viber-fab">
   <span class="viber-fab-text">Chat on Viber</span>
   <span class="viber-fab-btn">
     <span class="viber-fab-icon-stage">
-      <svg class="vf-icon-viber" viewBox="0 0 32 32" width="28" height="28" fill="none">
-        <path d="M9 3.3h14a6.7 6.7 0 0 1 6.7 6.7v7.4a6.7 6.7 0 0 1-6.7 6.7h-5.9l-5.4 4.5c-.6.5-1.5.1-1.5-.7v-4a6.7 6.7 0 0 1-6.6-6.5V10A6.7 6.7 0 0 1 9 3.3z" stroke="#fff" stroke-width="1.9" stroke-linejoin="round"/>
-        <path d="M20.4 18.7c-.3-.15-1.6-.8-1.9-.9-.24-.1-.42-.14-.6.14-.19.28-.7.9-.85 1.08-.15.18-.31.19-.58.06-.3-.15-1.24-.46-2.36-1.47-.87-.78-1.46-1.74-1.63-2.04-.17-.29-.02-.45.13-.6.13-.13.3-.34.44-.5.15-.18.19-.3.3-.5.1-.19.05-.37-.02-.52-.08-.15-.6-1.5-.85-2.05-.22-.53-.45-.46-.62-.47h-.53c-.18 0-.47.06-.72.35-.24.29-.94.92-.94 2.24 0 1.32.97 2.6 1.1 2.78.14.18 1.9 2.9 4.6 4.07.65.28 1.15.44 1.55.57.65.2 1.24.18 1.7.11.53-.08 1.6-.65 1.83-1.28.23-.63.23-1.16.16-1.28-.06-.12-.25-.19-.53-.34z" fill="#fff"/>
-        <path d="M17.6 8.4a5.6 5.6 0 0 1 4.3 4.3" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/>
-        <path d="M18 5.7a8.5 8.5 0 0 1 6.6 6.6" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/>
-      </svg>
+      <span class="vf-icon-viber vf-icon-img-wrap">
+        <img src="img/viber.png" alt="Viber">
+      </span>
       <svg class="vf-icon-hand" viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M8 12V6a1.5 1.5 0 0 1 3 0v5.3"/>
         <path d="M11 10.8V4.5a1.5 1.5 0 0 1 3 0v6.3"/>
@@ -1327,6 +2871,7 @@ pmAddBtn.addEventListener('click', () => {
     <span class="viber-fab-dot"></span>
   </span>
 </a>
+
 
 </body>
 </html>
