@@ -1,0 +1,95 @@
+/* =========================================================
+   PAGE TRANSITIONS — iOS-style push / pop
+   Drop-in for multi-page vanilla HTML sites
+   ========================================================= */
+
+:root{
+  --pt-dim: rgba(0,0,0,.18);
+  --pt-spring: cubic-bezier(.32,.72,0,1);   /* approximates iOS nav spring */
+  --pt-duration: 420ms;
+}
+
+html{ overflow-x: hidden; } /* prevent horizontal scrollbar flash during slide */
+
+body{
+  position: relative;
+}
+
+/* the layer that actually slides — wrap your page content in <main data-pt-content> */
+[data-pt-content]{
+  position: relative;
+  min-height: 100vh;
+  background: inherit;
+  will-change: transform;
+}
+
+/* dim veil sits under the sliding layer, used for the parallax "receding" effect */
+#pt-veil{
+  position: fixed;
+  inset: 0;
+  background: var(--pt-dim);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9998;
+  transition: opacity var(--pt-duration) var(--pt-spring);
+}
+
+/* ---------- ENTRANCE (new page arriving) ---------- */
+
+/* default: forward push — slides in from the right */
+body.pt-enter-push [data-pt-content]{
+  animation: pt-push-in var(--pt-duration) var(--pt-spring) both;
+}
+
+/* back navigation — slides in from the left, starts dimmed */
+body.pt-enter-pop [data-pt-content]{
+  animation: pt-pop-in var(--pt-duration) var(--pt-spring) both;
+}
+body.pt-enter-pop #pt-veil{ animation: pt-veil-out var(--pt-duration) var(--pt-spring) both; }
+
+@keyframes pt-push-in{
+  from{ transform: translate3d(100%,0,0); }
+  to{   transform: translate3d(0,0,0); }
+}
+
+@keyframes pt-pop-in{
+  from{ transform: translate3d(-28%,0,0); }
+  to{   transform: translate3d(0,0,0); }
+}
+
+@keyframes pt-veil-out{
+  from{ opacity: 1; }
+  to{   opacity: 0; }
+}
+
+/* ---------- EXIT (current page leaving, plays just before navigating) ---------- */
+
+/* forward push — current content recedes left + dims, like the old iOS screen underneath */
+body.pt-leave-push [data-pt-content]{
+  animation: pt-push-out var(--pt-duration) var(--pt-spring) both;
+}
+body.pt-leave-push #pt-veil{
+  opacity: 1;
+}
+
+/* back / pop — current content slides fully out to the right */
+body.pt-leave-pop [data-pt-content]{
+  animation: pt-pop-out var(--pt-duration) var(--pt-spring) both;
+}
+
+@keyframes pt-push-out{
+  from{ transform: translate3d(0,0,0); }
+  to{   transform: translate3d(-28%,0,0); }
+}
+
+@keyframes pt-pop-out{
+  from{ transform: translate3d(0,0,0); }
+  to{   transform: translate3d(100%,0,0); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  [data-pt-content], #pt-veil{
+    animation: none !important;
+    transition: none !important;
+  }
+}

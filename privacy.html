@@ -46,7 +46,7 @@
   }
   header .wrap{max-width:1180px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
   .brand{display:flex;align-items:center;gap:10px;flex-shrink:0;}
-  .brand img{height:38px;width:auto;object-fit:contain;}
+  .brand img{height:56px;width:auto;object-fit:contain;}
   .go-back{
     display:inline-flex;align-items:center;gap:7px;
     background:none;border:1px solid var(--line);border-radius:999px;
@@ -55,6 +55,7 @@
   }
   .go-back:hover{border-color:var(--green-deep);background:rgba(63,107,82,.06);}
   .go-back svg{width:15px;height:15px;}
+  .page-back{margin-bottom:18px;}
   .head-actions{display:flex;align-items:center;gap:14px;}
   .head-icon{
     display:flex;align-items:center;justify-content:center;
@@ -72,7 +73,7 @@
   }
 
   /* ===== PAGE TITLE ===== */
-  .legal-hero{padding:56px 0 36px;border-bottom:1px solid var(--line);}
+  .legal-hero{padding:80px 0 36px;border-bottom:1px solid var(--line);}
   .eyebrow{
     font-family:'IBM Plex Mono';font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
     color:var(--green-deep);display:flex;align-items:center;gap:10px;margin-bottom:18px;
@@ -108,7 +109,7 @@
   @media(max-width:640px){.toc-list{grid-template-columns:1fr;}}
 
   /* ===== CONTENT ===== */
-  .legal-body{padding:48px 0 80px;}
+  .legal-body{padding:36px 0 90px;}
   .legal-section{padding:34px 0;border-bottom:1px solid var(--line);}
   .legal-section:last-child{border-bottom:none;}
   .legal-section .tag{
@@ -175,10 +176,6 @@
       <a href="index.html" class="brand">
         <img src="img/logo.png" alt="Outright Trading logo">
       </a>
-      <a href="index.html" class="go-back">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-        Go Back
-      </a>
     </div>
     <div class="head-actions">
       <a href="index.html#cart" class="head-icon" aria-label="Cart">
@@ -191,6 +188,10 @@
 
 <section class="legal-hero">
   <div class="wrap">
+    <a href="index.html" class="go-back page-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      Go Back
+    </a>
     <div class="eyebrow">Legal</div>
     <h1>Privacy Policy</h1>
     <p class="lede">This policy explains what information Outright Trading collects when you browse, register, or place orders through our platform, how we use it, and the choices you have.</p>

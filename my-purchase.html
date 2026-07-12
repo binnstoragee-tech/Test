@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Purchase — Outright Trading</title>
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="shortcut icon" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#25262b;
+    --paper:#eef0ee;
+    --paper-raised:#f8f9f7;
+    --grey:#6e6e76;
+    --grey-light:#9a9aa1;
+    --line:#d5d7d3;
+    --green:#3f6b52;
+    --green-deep:#2c4d3b;
+    --rust:#a8432f;
+    --card-bg:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  html,body{width:100%;overflow-x:hidden;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.01em;}
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  button{font-family:inherit;}
+  .wrap{width:100%;max-width:820px;margin:0 auto;padding:0 clamp(20px,4vw,32px);}
+
+  /* ===== HEADER ===== */
+  header{
+    position:sticky;top:0;z-index:200;
+    padding:16px 0;
+    background:rgba(238,240,238,.9);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  header .wrap{max-width:1180px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .brand{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .brand img{height:56px;width:auto;object-fit:contain;}
+  .go-back{
+    display:inline-flex;align-items:center;gap:7px;
+    background:none;border:1px solid var(--line);border-radius:999px;
+    padding:9px 16px;font-family:'Inter';font-size:13.5px;font-weight:600;
+    color:var(--ink);cursor:pointer;transition:border-color .2s,background .2s;
+  }
+  .go-back:hover{border-color:var(--green-deep);background:rgba(63,107,82,.06);}
+  .go-back svg{width:15px;height:15px;}
+  .page-back{margin-bottom:20px;}
+
+  /* ---- danger zone ---- */
+  .danger-zone{
+    background:var(--card-bg);border:1px solid var(--line);border-radius:16px;
+    padding:20px 22px;display:flex;align-items:center;justify-content:space-between;
+    gap:16px;flex-wrap:wrap;margin-top:24px;
+  }
+  .danger-zone h3{font-size:14.5px;margin-bottom:4px;}
+  .danger-zone p{font-size:12.5px;color:var(--grey);}
+  .btn-logout{
+    display:inline-flex;align-items:center;gap:8px;flex-shrink:0;
+    background:#fff;border:1.5px solid rgba(168,67,47,.3);color:var(--rust);border-radius:10px;
+    padding:11px 22px;font-family:'Inter';font-size:13.5px;font-weight:700;cursor:pointer;
+    transition:background .2s,border-color .2s;white-space:nowrap;
+  }
+  .btn-logout:hover{background:rgba(168,67,47,.06);border-color:var(--rust);}
+  .btn-logout svg{width:15px;height:15px;}
+  @media(max-width:600px){
+    .danger-zone{flex-direction:column;align-items:stretch;text-align:center;}
+    .btn-logout{width:100%;justify-content:center;}
+  }
+  .btn-logout-head{
+    display:inline-flex;align-items:center;gap:7px;
+    background:none;border:1px solid var(--line);border-radius:999px;
+    padding:9px 16px;font-family:'Inter';font-size:13.5px;font-weight:600;
+    color:var(--rust);cursor:pointer;transition:border-color .2s,background .2s;
+  }
+  .btn-logout-head:hover{border-color:var(--rust);background:rgba(168,67,47,.06);}
+  .btn-logout-head svg{width:15px;height:15px;}
+  @media(max-width:480px){.btn-logout-head span.lbl{display:none;}}
+
+  /* ===== PAGE ===== */
+  .pur-page{padding:80px 0 90px;}
+
+  /* ---- greeting header ---- */
+  .pur-greet{display:flex;align-items:center;gap:18px;margin-bottom:28px;}
+  .pur-greet-icon{
+    width:64px;height:64px;border-radius:16px;flex-shrink:0;
+    background:var(--green-deep);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 18px -6px rgba(44,77,59,.35);
+  }
+  .pur-greet-icon svg{width:28px;height:28px;}
+  .pur-greet-info h1{font-size:22px;font-weight:700;margin-bottom:3px;}
+  .pur-greet-info p{font-size:13px;color:var(--grey);}
+
+  /* ---- cards ---- */
+  .pur-card{
+    background:var(--card-bg);border:1px solid var(--line);border-radius:16px;
+    overflow:hidden;
+  }
+  .pur-card-head{
+    display:flex;align-items:center;gap:12px;
+    padding:18px 22px;border-bottom:1px solid var(--line);
+  }
+  .pur-card-icon{
+    width:34px;height:34px;border-radius:10px;flex-shrink:0;
+    background:rgba(63,107,82,.1);color:var(--green-deep);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .pur-card-icon svg{width:16px;height:16px;}
+  .pur-card-head h2{font-size:15px;font-weight:700;flex:1;}
+
+  /* ---- empty state ---- */
+  .pur-empty{padding:56px 32px;text-align:center;}
+  .pur-empty-icon{
+    width:58px;height:58px;border-radius:50%;margin:0 auto 18px;
+    background:var(--paper-raised);color:var(--green-deep);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .pur-empty-icon svg{width:26px;height:26px;}
+  .pur-empty h3{font-size:17px;margin-bottom:8px;}
+  .pur-empty p{font-size:14px;color:var(--grey);line-height:1.6;max-width:340px;margin:0 auto 22px;}
+  .btn-primary{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    background:var(--green-deep);color:#fff;border:none;border-radius:999px;
+    padding:12px 26px;font-family:'Inter';font-size:14px;font-weight:700;cursor:pointer;
+    transition:background .2s;
+  }
+  .btn-primary:hover{background:var(--green);}
+
+  /* ---- logged-out gate ---- */
+  .gate-wrap{display:flex;justify-content:center;padding:24px 0 20px;}
+  .gate-card{
+    background:var(--card-bg);border:1px solid var(--line);border-radius:20px;
+    padding:44px 34px;text-align:center;max-width:400px;width:100%;
+  }
+  .gate-icon{
+    width:58px;height:58px;border-radius:50%;margin:0 auto 18px;
+    background:var(--paper-raised);color:var(--green-deep);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .gate-icon svg{width:26px;height:26px;}
+  .gate-card h2{font-size:19px;margin-bottom:8px;}
+  .gate-card p{font-size:14px;color:var(--grey);line-height:1.6;margin-bottom:24px;}
+  .btn-primary.full{display:flex;width:100%;margin-bottom:12px;}
+  .gate-back{font-size:13px;color:var(--grey-light);font-weight:600;}
+  .gate-back:hover{color:var(--green-deep);}
+
+  /* ===== LOGOUT CONFIRM MODAL (Cancel / Yes) ===== */
+  .ot-confirm-overlay{
+    position:fixed;inset:0;z-index:1400;
+    background:rgba(20,22,20,.45);
+    display:flex;align-items:center;justify-content:center;padding:20px;
+    opacity:0;visibility:hidden;
+    transition:opacity .25s ease,visibility .25s;
+  }
+  .ot-confirm-overlay.open{opacity:1;visibility:visible;}
+  .ot-confirm-box{
+    width:100%;max-width:340px;background:#fff;border-radius:18px;
+    padding:26px 24px 22px;text-align:center;
+    transform:scale(.95) translateY(8px);
+    transition:transform .3s cubic-bezier(.22,1,.36,1);
+    box-shadow:0 30px 60px -20px rgba(20,22,20,.4);
+  }
+  .ot-confirm-overlay.open .ot-confirm-box{transform:scale(1) translateY(0);}
+  .ot-confirm-icon{
+    width:48px;height:48px;border-radius:50%;margin:0 auto 14px;
+    background:rgba(168,67,47,.1);color:var(--rust);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .ot-confirm-icon svg{width:22px;height:22px;}
+  .ot-confirm-box h3{font-size:17px;margin-bottom:6px;}
+  .ot-confirm-box p{font-size:13.5px;color:var(--grey);line-height:1.55;margin-bottom:20px;}
+  .ot-confirm-actions{display:flex;gap:10px;}
+  .ot-confirm-actions button{
+    flex:1;padding:11px 0;border-radius:999px;border:1px solid transparent;
+    font-family:'Inter';font-size:13.5px;font-weight:700;
+    cursor:pointer;transition:background .2s,border-color .2s;
+  }
+  .ot-confirm-cancel{background:none;border-color:var(--line);color:var(--ink);}
+  .ot-confirm-cancel:hover{border-color:var(--ink);}
+  .ot-confirm-yes{background:var(--rust);border-color:var(--rust);color:#fff;}
+  .ot-confirm-yes:hover{background:#8f3826;}
+
+  /* ===== MOBILE ===== */
+  @media(max-width:600px){
+    .pur-page{padding:28px 0 90px;}
+    .pur-greet{flex-direction:column;text-align:center;gap:12px;margin-bottom:24px;}
+    .pur-card-head{padding:16px 18px;}
+    .pur-empty{padding:44px 22px;}
+    .gate-card{padding:36px 24px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <a href="index.html" class="brand">
+        <img src="img/logo.png" alt="Outright Trading logo">
+      </a>
+    </div>
+  </nav>
+</header>
+
+<main class="pur-page">
+  <div class="wrap">
+
+    <a href="index.html" class="go-back page-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      Go Back
+    </a>
+
+    <!-- Logged-out gate -->
+    <div class="gate-wrap" id="gateWrap" style="display:none;">
+      <div class="gate-card">
+        <div class="gate-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h2>Sign in to continue</h2>
+        <p>You need to be logged in to view your order and purchase history.</p>
+        <a href="index.html" class="btn-primary full">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Go to Login
+        </a>
+        <a href="index.html" class="gate-back">← Back to home</a>
+      </div>
+    </div>
+
+    <!-- Logged-in content -->
+    <div id="purContent" style="display:none;">
+
+      <div class="pur-greet">
+        <span class="pur-greet-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </span>
+        <div class="pur-greet-info">
+          <h1>My Purchase</h1>
+          <p>Track your quotations and past orders with Outright Trading.</p>
+        </div>
+      </div>
+
+      <div class="pur-card">
+        <div class="pur-card-head">
+          <span class="pur-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </span>
+          <h2>Order History</h2>
+        </div>
+        <div class="pur-empty">
+          <div class="pur-empty-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </div>
+          <h3>No purchases yet</h3>
+          <p>Your orders and quotations will show up here once you place one.</p>
+          <a href="index.html#products" class="btn-primary">Browse Products</a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+
+<!-- ===== LOGOUT CONFIRM MODAL ===== -->
+<div class="ot-confirm-overlay" id="otConfirmOverlay">
+  <div class="ot-confirm-box">
+    <div class="ot-confirm-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </div>
+    <h3>Log out?</h3>
+    <p>You'll need to login again to view your account, cart, and purchase history.</p>
+    <div class="ot-confirm-actions">
+      <button type="button" class="ot-confirm-cancel" id="otConfirmCancel">Cancel</button>
+      <button type="button" class="ot-confirm-yes" id="otConfirmYes">Yes, Logout</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+function isLoggedIn(){ return localStorage.getItem('outrightLoggedIn') === '1'; }
+function logout(){
+  logoutFirebase();
+  localStorage.removeItem('outrightLoggedIn');
+  localStorage.removeItem('outrightUser');
+  window.location.href = 'index.html';
+}
+
+const gateWrap = document.getElementById('gateWrap');
+const purContent = document.getElementById('purContent');
+
+function renderPurchasePage(){
+  if(isLoggedIn()){
+    gateWrap.style.display = 'none';
+    purContent.style.display = 'block';
+  } else {
+    gateWrap.style.display = 'flex';
+    purContent.style.display = 'none';
+  }
+}
+renderPurchasePage();
+
+/* ===== LOGOUT CONFIRM MODAL (Cancel / Yes) — kept in case a logout
+   trigger is added back later; nothing currently opens it. ===== */
+const otConfirmOverlay = document.getElementById('otConfirmOverlay');
+const otConfirmCancel = document.getElementById('otConfirmCancel');
+const otConfirmYes = document.getElementById('otConfirmYes');
+function openLogoutConfirm(){ otConfirmOverlay.classList.add('open'); }
+function closeLogoutConfirm(){ otConfirmOverlay.classList.remove('open'); }
+otConfirmCancel.addEventListener('click', closeLogoutConfirm);
+otConfirmOverlay.addEventListener('click', e => { if(e.target === otConfirmOverlay) closeLogoutConfirm(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLogoutConfirm(); });
+otConfirmYes.addEventListener('click', () => { closeLogoutConfirm(); logout(); });
+</script>
+
+</body>
+</html>
