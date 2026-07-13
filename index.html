@@ -2463,7 +2463,10 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeCatDrawe
 document.querySelectorAll('.cat-drawer-item').forEach(item => {
   item.addEventListener('click', () => {
     selectCategory(item.dataset.cat);
-    document.getElementById('productGrid').scrollIntoView({ behavior:'smooth', block:'start' });
+    closeCatDrawer();
+    setTimeout(() => {
+      document.getElementById('productGrid').scrollIntoView({ behavior:'smooth', block:'start' });
+    }, 500);
   });
 });
 
